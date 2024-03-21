@@ -1,0 +1,7 @@
+[project]
+name = "llmgame"
+version = "1.0.0"
+description = "The best LLM-powered game out there."
+dependencies = [
+    "flask",
+]
