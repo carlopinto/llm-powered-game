@@ -12,16 +12,19 @@
             <h1>Welcome, Challenger!</h1>
             <p>Enter your name to embark on this quizzing quest:</p>
         </header>
-        <input type="text" id="playerName" placeholder="Your Name">
-        <button id="continueButton">Continue</button>
+        <form method="post">
+            <input type="text" id="name" name="name" placeholder="Your Name" value="{{ request.form['name'] }}">
+            <button id="continueButton">Continue</button>
+        </form>
     </div>
+
+    <div class="loader" id="loader"></div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
-        // $("#startButton").click(function() {
-        //     $("#landingPage").hide();
-        //     $("#welcomePage").show();
-        // });
+         $("#continueButton").click(function() {
+            document.getElementById('loader').style.display = 'block';
+        });
 
         // Future code to handle clicking 'continueButton' 
     </script>
