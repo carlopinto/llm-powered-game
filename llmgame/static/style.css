@@ -12,7 +12,6 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-
     
     background-color: #f0f4f8; /* Keep this as a fallback */
     background-image: url('quiz-bg.png');
@@ -79,28 +78,91 @@ header p {
     100% { transform: rotate(360deg); }
   }
 
-  .topic-grid {
+.topic-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 30px;
 }
 
 .topic-card {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 15px;
+    border: 2px solid #ccc;  /* Updated border */
+    border-radius: 8px;
+    padding: 20px;
     text-align: center;
     cursor: pointer;
-    transition: box-shadow 0.3s ease; 
+    transition: background-color 0.3s ease; 
+    margin-top: 30px;
+    background-color: #67f079;
 }
 
-.topic-card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    margin-bottom: 10px;
+.topic-card h2 {
+    margin-bottom: 10px; 
+    color: #333; /* A darker text color */
 }
 
 .topic-card:hover {
+    background-color: #e8f0fe; /* A light blue hover color */
     box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+}
+
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.question-area h1 {
+    color: #333; 
+}
+
+.option-card {
+    border: 2px solid #ccc;  /* Updated border */
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+    margin-top: 30px;
+    background-color: #68b9f0;
+}
+
+.option-card h2 {
+    margin-bottom: 10px; 
+    color: #333; /* A darker text color */
+}
+
+.option-card:hover {
+    background-color: #ffe44a; /* A light blue hover color */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+}
+
+.option-card.disabled {
+    opacity: 0.9;     /* Make disabled options less prominent */
+    cursor: not-allowed; /* Add a 'not-allowed' cursor */
+}
+
+.question-feedback {
+    margin-top: 30px;
+    color: red;
+}
+
+.question-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.question-buttons button {  /* Target all buttons within the section */
+    background-color: #697b8a; /* Your existing blue color */
+    color: #fff;
+    border: none;
+    padding: 12px 20px;   /* Increased padding */
+    border-radius: 6px;
+    font-size: 15px;      /* Slightly larger text */
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+
+.question-buttons button:hover {
+    background-color: #1e95e9;  /* Darker blue on hover */
 }

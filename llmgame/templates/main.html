@@ -13,10 +13,9 @@
         <p>It's time to pick a topic.</p>
         <div class="topic-grid">
             {% for topic in topics %}
-            <div class="topic-card" data-topic-name="{{topic}}">
-                <img src="https://via.placeholder.com/150?text={{topic}}" alt="{{topic}}">
-                <h2>{{topic}}</h2>
-            </div>
+                <div class="topic-card" data-topic-name="{{topic}}">
+                    <h2>{{topic}}</h2>
+                </div>
             {% endfor %}
         </div>
     </div>
@@ -25,9 +24,15 @@
     <script>
 
         $('.topic-card').click(function() {
-            let selectedTopic = $(this).data('topic-name');
-            console.log(selectedTopic);
-            // TODO: Send the selectedTopic to your Flask application
+            let selTopic = $(this).data('topic-name');
+            console.log(selTopic);
+            // Collect all topics
+            var topics = {{ topics|safe }};
+
+            let selectedTopic = encodeURIComponent(selTopic);
+            let allTopics = encodeURIComponent(JSON.stringify(topics));
+            let url = "{{ url_for('llmgame.display_question') }}?selected_topic=" + selectedTopic + "&all_topics=" + allTopics;
+            window.location.href = url;
         });
     </script>
 </body>
