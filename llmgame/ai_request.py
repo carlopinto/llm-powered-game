@@ -8,12 +8,15 @@ Prerequisites:
     * No prerequisites for OpenAI - (as long as the API key is in the 
       .env file and there's credit in the account)
 '''
-
+import os
 import json
 import requests
 # import sseclient  # pip install sseclient-py
 import openai
 from openai import OpenAI
+
+# Retrieve the API key from an environment variable
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # LM Studio
 HOST = "http://127.0.0.1:1234"
@@ -82,8 +85,8 @@ def query_openai(messages): # pragma: no cover
     client = OpenAI()
     try:
         completion = client.chat.completions.create(
-            # model="gpt-3.5-turbo",
-            model="gpt-4",
+            model="gpt-3.5-turbo",
+            # model="gpt-4",
             messages=messages
         )
         return completion.choices[0].message.content
