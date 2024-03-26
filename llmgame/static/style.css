@@ -7,12 +7,6 @@
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    
     background-color: #f0f4f8; /* Keep this as a fallback */
     background-image: url('quiz-bg.png');
     background-repeat: no-repeat;  /* Prevent image repetition */
@@ -21,12 +15,29 @@ body {
     
 }
 
+.main-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
 .container {
     background-color: #fff;
     padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
+
+#questionPage {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 60%;
 }
 
 header p {
@@ -165,4 +176,29 @@ header p {
 
 .question-buttons button:hover {
     background-color: #1e95e9;  /* Darker blue on hover */
+}
+
+#question-sidebar, #hint-sidebar {
+    width: 15%;
+    float: right; /* Or float: left - decide the position  */
+    background-color: #f0f0f0; /* Light background color */
+    padding: 20px;
+    margin: 7%; /* For spacing around the sidebar  */
+    text-align: center;
+}
+
+#question-list, #hint-list {
+    list-style: none;
+    padding: 0; 
+    margin-top: 15px;
+}
+
+.question-item, .hint-item {
+   margin-bottom: 10px;
+}
+
+.question-item.current {
+    font-weight: bold;
+    color: #337ab7; /*  A highlight color */ 
+    background-color: #fdf90e; /* Light background color */
 }

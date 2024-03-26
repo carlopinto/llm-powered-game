@@ -38,3 +38,15 @@ $('.option-card').click(function() {
         }
     });
 });
+
+
+// Function to update current question
+function setCurrentQuestion(targetQuestionItem) {
+    // Remove 'current' class from all items
+    questionItems.forEach(item => {
+      item.classList.remove('current');
+    });
+  
+    // Add 'current' class to clicked item
+    targetQuestionItem.classList.add('current'); 
+}

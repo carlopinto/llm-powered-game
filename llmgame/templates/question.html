@@ -7,22 +7,59 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container" id="questionPage"> 
-        <div class="question-area"><h1>{{ question }}</h1></div>
-        <br>
-        <div class="option-grid">
-            {% for option in options %}
-                <div class="option-card" data-option-name="{{option}}" id="{{option}}"><h2>{{ option }}</h2></div>
-            {% endfor %}
-        </div>
-        <div class="question-feedback" id="feedback"></div> 
-        <div class="question-buttons" id="buttons">
-            <button class="quit-button" onclick="window.location.href='{{ url_for( 'llmgame.index' ) }}';">Quit</button>
-            <button class="next-button" id="next-button" style="display: none;">Next</button>
-        </div> 
-    </div>
+    <div class="main-section">
+        <aside id="hint-sidebar" >
+            <h2>Hints</h2>
+            <ul id="hint-list">
+            <li class="hint-item">Hint 1</li>
+            <li class="hint-item">Hint 2</li>
+            <li class="hint-item">Hint 3</li>
+            </ul>
+        </aside>
 
+        <div class="container" id="questionPage"> 
+            <div class="question-area"><h1>{{ question }}</h1></div>
+            <br>
+            <div class="option-grid">
+                {% for option in options %}
+                    <div class="option-card" data-option-name="{{option}}" id="{{option}}"><h2>{{ option }}</h2></div>
+                {% endfor %}
+            </div>
+            <div class="question-feedback" id="feedback"></div> 
+            <div class="question-buttons" id="buttons">
+                <button class="quit-button" onclick="window.location.href='{{ url_for( 'llmgame.index' ) }}';">Quit</button>
+                <button class="next-button" id="next-button" style="display: none;" onclick="window.location.href='{{ url_for( 'llmgame.next_question' ) }}';">Next</button>
+            </div> 
+        </div>
+
+        <aside id="question-sidebar">
+            <h2>Questions</h2>
+            <ul id="question-list">
+            <li class="question-item current">Question 1</li>
+            <li class="question-item">Question 2</li>
+            <li class="question-item">Question 3</li>
+            <li class="question-item">Question 4</li>
+            <li class="question-item">Question 5</li>
+            <li class="question-item">Question 6</li>
+            <li class="question-item">Question 7</li>
+            <li class="question-item">Question 8</li>
+            <li class="question-item">Question 9</li>
+            <li class="question-item">Question 10</li>
+            <li class="question-item">Question 11</li>
+            <li class="question-item">Question 12</li>
+            <li class="question-item">Question 13</li>
+            <li class="question-item">Question 14</li>
+            <li class="question-item">Question 15</li>
+            </ul>
+        </aside>
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="{{url_for('static', filename='question.js')}}"></script>
+    <script>
+        const questionList = document.getElementById('question-list');
+        const questionItems = questionList.querySelectorAll('.question-item');
+
+        setCurrentQuestion(questionItems[Number({{current_question}}) - 1]);
+    </script>
 </body>
 </html>

@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container" id="welcomePage"> 
-        <header>
-            <h1>Welcome, Challenger!</h1>
-            <p>Enter your name to embark on this quizzing quest:</p>
-        </header>
-        <form method="post">
-            <input type="text" id="name" name="name" placeholder="Your Name" value="{{ request.form['name'] }}">
-            <button id="continueButton">Continue</button>
-        </form>
+    <div class="main-section">
+        <div class="container" id="welcomePage"> 
+            <header>
+                <h1>Welcome, Challenger!</h1>
+                <p>Enter your name to embark on this quizzing quest:</p>
+            </header>
+            <form method="post">
+                <input type="text" id="name" name="name" placeholder="Your Name" value="{{ request.form['name'] }}">
+                <button id="continueButton">Continue</button>
+            </form>
+        </div>
+
+        <div class="loader" id="loader"></div>
     </div>
-
-    <div class="loader" id="loader"></div>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
          $("#continueButton").click(function() {

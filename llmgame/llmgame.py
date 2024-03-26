@@ -27,6 +27,7 @@ def welcome():
             name = 'Player'
             
         session['name'] = name
+        session['index'] = 1
         
         topics = generate_topics()        
 
@@ -47,14 +48,26 @@ def display_question():
         selected_topic = generate_random_topic(topics)
 
     session['topic'] = selected_topic
-    session['index'] = 1
 
     question, options, answer = generate_question(selected_topic)
     session['answer'] = answer
 
     return render_template('question.html', 
                            question=question, 
-                           options=options) 
+                           options=options,
+                           current_question=session['index']) 
+
+
+@bp.route('/next', methods=('GET', 'POST'))
+def next_question():
+    
+    session['index'] += 1
+    
+    topics = generate_topics()        
+
+    return render_template('main.html',
+                            name=session['name'],
+                            topics=topics)
 
 
 def generate_topics():
@@ -171,6 +184,7 @@ The index of the question is " + str(session['index']) + \
             
             return question, options, answer
 
+    # for testing purposes
     # question = "Placeholder: What is the capital of France?" 
     # options = ["London", "Paris", "Berlin", "Rome"]  
     # answer = "Paris" 
