@@ -20,12 +20,16 @@
                 {% endfor %}
             </div>
         </div>
+
+        <div class="loader" id="loader"></div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
 
         $('.topic-card').click(function() {
+            document.getElementById('loader').style.display = 'block';
+            
             let selTopic = $(this).data('topic-name');
             console.log(selTopic);
             // Collect all topics
