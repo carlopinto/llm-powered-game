@@ -79,14 +79,12 @@ def generate_topics():
     instruction = "Generate 5 different topics for the game. \
 Return the single array of 5 topics in JSON format. \
 Make sure to generate only one JSON object.  \n\
+Output:\n\
 { \
 \"topics\": [ \
 \"History\", \"Science\", \"Movies\", \"Music\", \"Sport\"] \
-} \n\
-{ \
-\"topics\": [ \
-\"Politics\", \"Economy\", \"Environment\", \"Computing\", \"Food\"] \
-} "
+}\n\
+Output:\n"
 
     sys_msg = SYS_MSG
 
@@ -118,13 +116,11 @@ def generate_random_topic(topics: list):
     instruction = "Generate one random topic for the game. \
 Return the single string in JSON format. \
 Do not pick any of these topics: " + ' ,'.join(topics) + ". \
-Two examples are: \n\
+Output:\n\
 { \
-\"random_topic\": \"History\" \
-} \n\
-{ \
-\"random_topic\": \"Computing\" \
-}"
+\"randomtopic\": \"History\" \
+}\n\
+Output:\n"
 
     sys_msg = SYS_MSG
 
@@ -134,11 +130,11 @@ Two examples are: \n\
         llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:
         # print(llm_response)
-        if "random_topic" in llm_response:
+        if "randomtopic" in llm_response:
             # from str to python obj
             response_json = json.loads(llm_response)
             # extract str from dict
-            random_topic = response_json['random_topic']
+            random_topic = response_json['randomtopic']
             return random_topic
 
     predef_random_topic = "Technology"
@@ -158,21 +154,13 @@ Use the given index of the question to come up with questions \
 with increasing complexity. Its value can be between 1 and 15; if it is equal to 1, the question \
 will be extremely easy and if it is equal to 15, the question will be extremely difficult. \
 The index of the question is " + str(session['index']) + \
-". Make sure to generate only one JSON object. Three examples of the desired output are: \n \
-{ \
-\"question\": \"What is the capital of France?\" \
-\"options\": [ \"London\", \"Paris\", \"Rome\", \"Berlin\"] \
-\"answer\": \"Paris\" \
-} \n\
-{ \
+". Make sure to generate only one JSON object.\n\
+Output:\n \
 \"question\": \"Traditionally, mozzarella cheese is made from the milk of which Animal?\" \
 \"options\": [ \"Sheep\", \"Goat\", \"Moose\", \"Buffalo\"] \
 \"answer\": \"Buffalo\" \
-} \n\
-\"question\": \"Complete the title of the musical by Andrew Lloyd Webber, ‘Tell Me On A …’?\" \
-\"options\": [ \"Sunday\", \"Monday\", \"Tuesday\", \"Friday\"] \
-\"answer\": \"Sunday\" \
-}"
+}\n\
+Output:\n"
 
     sys_msg = SYS_MSG
 
