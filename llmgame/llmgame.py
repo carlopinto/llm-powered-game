@@ -4,7 +4,7 @@ from flask import (
     Blueprint, render_template, request, jsonify, session, redirect, url_for)
 from werkzeug.exceptions import abort
 
-from llmgame.ai_request import check_llm_server_status, single_query_llm, single_query_openai
+from llmgame.ai_request import check_llm_server_status, single_query_llm, single_query_openai, query_ollama
 
 bp = Blueprint('llmgame', __name__)
 
@@ -91,7 +91,8 @@ Make sure to generate only one JSON object.  \n\
     sys_msg = SYS_MSG
 
     if OFFLINE:
-        llm_response = single_query_llm(instruction, "", sys_msg)
+        # llm_response = single_query_llm(instruction, "", sys_msg)
+        llm_response = query_ollama(sys_msg + " " + instruction)
     else:
         llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:
@@ -129,7 +130,8 @@ Two examples are: \n\
     sys_msg = SYS_MSG
 
     if OFFLINE:
-        llm_response = single_query_llm(instruction, "", sys_msg)
+        # llm_response = single_query_llm(instruction, "", sys_msg)
+        llm_response = query_ollama(sys_msg + " " + instruction)
     else:
         llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:
@@ -177,7 +179,8 @@ The index of the question is " + str(session['index']) + \
     sys_msg = SYS_MSG
 
     if OFFLINE:
-        llm_response = single_query_llm(instruction, "", sys_msg)
+        # llm_response = single_query_llm(instruction, "", sys_msg)
+        llm_response = query_ollama(sys_msg + " " + instruction)
     else:
         llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:

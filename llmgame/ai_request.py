@@ -21,6 +21,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # LM Studio
 HOST = "http://127.0.0.1:1234"
 URL = HOST + "/v1/chat/completions"
+OLLAMA = "http://127.0.0.1:11434/api/"
 
 headers = {
     "Content-Type": "application/json"
@@ -122,3 +123,46 @@ def chat(system, user_assistant, offline=True): # pragma: no cover
 
     msgs = system_msg + user_assistant_msgs
     return query_llm(msgs) if offline else query_openai(msgs)
+
+
+def query_ollama(prompt): # pragma: no cover
+    """ Send query to Ollama \n
+    Generate a response for a given prompt with a provided model.
+    """
+    try:
+        data = {
+            "model": "mistral",
+            "prompt": prompt,
+            "stream": False
+        }
+        response = requests.post(OLLAMA + "generate", headers=headers, json=data, verify=False)
+        response_json = json.loads(response.text)
+        return response_json['response']
+    except requests.exceptions.RequestException as e:
+        print("An exception occurred: ", e)
+        return None
+
+
+def query_ollama_chat(messages): # pragma: no cover
+    """ Send query to Ollama \n
+    Generate the next message in a chat with a provided model.
+    Format for messages is:\n
+    [{"role": "system", "content": system_message},
+    {"role": "user", "content": prompt}]
+    """
+    try:
+        data = {
+            "model": "mistral",
+            "messages": messages,
+            "stream": False
+        }
+        response = requests.post(OLLAMA + "chat", headers=headers, json=data, verify=False)
+        response_json = json.loads(response.text)
+        return response_json['message']['content']
+    except requests.exceptions.RequestException as e:
+        print("An exception occurred: ", e)
+        return None
+
+# if __name__ == "__main__":
+#     print(query_ollama("What is the colour of the sky? Just tell me the colour."))
+#     print(query_ollama_chat([{"role": "user", "content": "What is the colour of the sky? Just tell me the colour."}]))
