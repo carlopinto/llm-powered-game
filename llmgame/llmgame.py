@@ -4,7 +4,13 @@ from flask import (
     Blueprint, render_template, request, jsonify, session, redirect, url_for)
 from werkzeug.exceptions import abort
 
-from llmgame.ai_request import check_llm_server_status, single_query_llm, single_query_openai, query_ollama
+from llmgame.ai_request import (
+    check_llm_server_status, single_query_llm, 
+    single_query_openai, query_ollama, Ollama)
+
+from langchain_openai import ChatOpenAI
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain.prompts import PromptTemplate
 
 bp = Blueprint('llmgame', __name__)
 
@@ -73,35 +79,36 @@ def next_question():
 
 def generate_topics():
     """Generate a list of 5 topics (plus Random)"""
+    # LM Studio
     # if check_llm_server_status() == 0: # pragma: no cover
     #     return abort(404, 'LLM server is not available.')
 
-    instruction = "Generate 5 different topics for the game. \
-Return the single array of 5 topics in JSON format. \
-Make sure to generate only one JSON object.  \n\
-{ \
-\"topics\": [ \
-\"History\", \"Science\", \"Movies\", \"Music\", \"Sport\"] \
-} \n\
-{ \
-\"topics\": [ \
-\"Politics\", \"Economy\", \"Environment\", \"Computing\", \"Food\"] \
-} "
-
-    sys_msg = SYS_MSG
-
+    instruction = "Generate 5 different topics for the game"
+    
+    response_schemas = [
+        ResponseSchema(name="topics", description="array of topics completely unrelated")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    format_instructions = output_parser.get_format_instructions()
+    prompt = PromptTemplate(
+        template="Follow the user's instruction and make sure you are inspired by 'Who wants to be a millionaire'.\n{format_instructions}\n{instruction}",
+        input_variables=["instruction"],
+        partial_variables={"format_instructions": format_instructions},
+    )
     if OFFLINE:
-        # llm_response = single_query_llm(instruction, "", sys_msg)
-        llm_response = query_ollama(sys_msg + " " + instruction)
+        model = Ollama(model="mistral", temperature=0.8)
     else:
-        llm_response = single_query_openai(instruction, "", sys_msg)
+        model = ChatOpenAI(model="gpt-4", temperature=0.8)
+    chain = prompt | model | output_parser
+    
+    llm_response = chain.invoke({"instruction": instruction})
     if llm_response != "" and llm_response is not None:
-        # print (llm_response)
+        print (llm_response)
         if "topics" in llm_response:
-            # from str to python dict
-            response_json = json.loads(llm_response)
+            # from str to python dict - no longer needed
+            # response_json = json.loads(llm_response)
             # extract list from dict
-            topics = response_json['topics']
+            topics = llm_response['topics']
             # add random topic to list
             topics.append("Random")
             return topics

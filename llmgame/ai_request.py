@@ -14,10 +14,8 @@ import requests
 # import sseclient  # pip install sseclient-py
 import openai
 from openai import OpenAI
-from langchain_openai import ChatOpenAI
+
 from langchain_community.llms import Ollama
-from langchain.output_parsers import ResponseSchema, StructuredOutputParser
-from langchain.prompts import PromptTemplate
 
 # Retrieve the API key from an environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -134,25 +132,6 @@ def invoke_ollama(prompt):
     """Send a request to the API endpoint of Ollama to interact"""
     llm = Ollama(model="mistral")
     return llm.invoke(prompt)
-
-
-def struct_output_ollama(message):
-    """"""
-    response_schemas = [
-        ResponseSchema(name="topics", description="array of topics completely unrelated")
-    ]
-    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
-    format_instructions = output_parser.get_format_instructions()
-    prompt = PromptTemplate(
-        template="Follow the user's instruction and make sure you are inspired by 'Who wants to be a millionaire'.\n{format_instructions}\n{instruction}",
-        input_variables=["instruction"],
-        partial_variables={"format_instructions": format_instructions},
-    )
-    model = Ollama(model="mistral", temperature=0.8)
-    # model = ChatOpenAI(model="gpt-4", temperature=0.8)
-    chain = prompt | model | output_parser
-    
-    return chain.invoke({"instruction": message})
 
 
 def query_ollama(prompt): # pragma: no cover
