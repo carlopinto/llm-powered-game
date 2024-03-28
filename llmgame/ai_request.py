@@ -14,6 +14,10 @@ import requests
 # import sseclient  # pip install sseclient-py
 import openai
 from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_community.llms import Ollama
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain.prompts import PromptTemplate
 
 # Retrieve the API key from an environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -21,6 +25,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # LM Studio
 HOST = "http://127.0.0.1:1234"
 URL = HOST + "/v1/chat/completions"
+# Ollama
 OLLAMA = "http://127.0.0.1:11434/api/"
 
 headers = {
@@ -125,6 +130,31 @@ def chat(system, user_assistant, offline=True): # pragma: no cover
     return query_llm(msgs) if offline else query_openai(msgs)
 
 
+def invoke_ollama(prompt):
+    """Send a request to the API endpoint of Ollama to interact"""
+    llm = Ollama(model="mistral")
+    return llm.invoke(prompt)
+
+
+def struct_output_ollama(message):
+    """"""
+    response_schemas = [
+        ResponseSchema(name="topics", description="array of topics completely unrelated")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    format_instructions = output_parser.get_format_instructions()
+    prompt = PromptTemplate(
+        template="Follow the user's instruction and make sure you are inspired by 'Who wants to be a millionaire'.\n{format_instructions}\n{instruction}",
+        input_variables=["instruction"],
+        partial_variables={"format_instructions": format_instructions},
+    )
+    model = Ollama(model="mistral", temperature=0.8)
+    # model = ChatOpenAI(model="gpt-4", temperature=0.8)
+    chain = prompt | model | output_parser
+    
+    return chain.invoke({"instruction": message})
+
+
 def query_ollama(prompt): # pragma: no cover
     """ Send query to Ollama \n
     Generate a response for a given prompt with a provided model.
@@ -163,6 +193,8 @@ def query_ollama_chat(messages): # pragma: no cover
         print("An exception occurred: ", e)
         return None
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     print(query_ollama("What is the colour of the sky? Just tell me the colour."))
 #     print(query_ollama_chat([{"role": "user", "content": "What is the colour of the sky? Just tell me the colour."}]))
+    # print(struct_output_ollama("Generate 5 different topics for the game"))
+    print(invoke_ollama("Generate 5 different topics for the game"))
