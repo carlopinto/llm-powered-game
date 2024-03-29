@@ -37,7 +37,13 @@
 
             let selectedTopic = encodeURIComponent(selTopic);
             let allTopics = encodeURIComponent(JSON.stringify(topics));
-            let url = "{{ url_for('llmgame.display_question') }}?selected_topic=" + selectedTopic + "&all_topics=" + allTopics;
+            let url = "";
+            if(selTopic=="Surprise me!"){
+                url = "{{ url_for('llmgame.display_surprise') }}?all_topics=" + allTopics;
+            }
+            else{
+                url = "{{ url_for('llmgame.display_question') }}?selected_topic=" + selectedTopic;
+            }
             window.location.href = url;
         });
     </script>
