@@ -47,15 +47,21 @@ def welcome():
     return render_template('welcome.html')
 
 
+@bp.route('/display_surprise') 
+def display_surprise():
+    topics = json.loads(request.args.get('all_topics')) 
+    
+    topic = generate_random_topic(topics)
+
+    return render_template('surprise.html', 
+                           topic=topic) 
+
+
 @bp.route('/display_question') 
 def display_question():
     selected_topic = request.args.get('selected_topic')
-    topics = json.loads(request.args.get('all_topics')) 
 
     # Set up the question based on the topic
-    if selected_topic == RANDOM_LABEL:
-        selected_topic = generate_random_topic(topics)
-
     session['topic'] = selected_topic
 
     question, options, answer = generate_question(selected_topic)
