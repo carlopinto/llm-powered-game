@@ -173,7 +173,7 @@ def generate_question(topic: str):
     if check_ollama_status() == 0: # pragma: no cover
         return abort(404, 'Ollama is not available.')
 
-    instruction = "Generate one question based on the chosen topic of " + topic
+    instruction = "Generate one question based on the chosen topic of \"" + topic + "\""
     response_schemas = [
         ResponseSchema(name="question", 
                        description="string of the question"),
