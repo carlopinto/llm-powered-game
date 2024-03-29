@@ -14,12 +14,15 @@
                 <p>Test your wits against the unconventional!</p>
             </header>
 
-            <button id="startButton" onclick="location.href='{{ url_for('llmgame.welcome') }}'">Begin the Challenge</button>
+            <button id="startButton">Begin the Challenge</button>
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
         // Placeholder - Your existing or future JS code will go here
+        $('#startButton').click(function() {
+            window.location.href="{{ url_for( 'llmgame.welcome' ) }}";
+        });
     </script>
 </body>
 </html>

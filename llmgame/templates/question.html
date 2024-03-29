@@ -27,8 +27,8 @@
             </div>
             <div class="question-feedback" id="feedback"></div> 
             <div class="question-buttons" id="buttons">
-                <button class="quit-button" onclick="window.location.href='{{ url_for( 'llmgame.index' ) }}';">Quit</button>
-                <button class="next-button" id="next-button" style="display: none;" onclick="window.location.href='{{ url_for( 'llmgame.next_question' ) }}';">Next</button>
+                <button class="quit-button" >Quit</button>
+                <button class="next-button" id="next-button" style="display: none;" >Next</button>
             </div> 
         </div>
 
@@ -52,6 +52,8 @@
             <li class="question-item">Question 15</li>
             </ul>
         </aside>
+
+        <div class="loader" id="loader"></div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="{{url_for('static', filename='question.js')}}"></script>
@@ -60,6 +62,16 @@
         const questionItems = questionList.querySelectorAll('.question-item');
 
         setCurrentQuestion(questionItems[Number({{current_question}}) - 1]);
+
+        $('#next-button').click(function() {
+            document.getElementById('loader').style.display = 'block';
+
+            window.location.href="{{ url_for( 'llmgame.next_question' ) }}";
+        });
+
+        $('#quit-button').click(function() {
+            window.location.href="{{ url_for( 'llmgame.index' ) }}";
+        });
     </script>
 </body>
 </html>
