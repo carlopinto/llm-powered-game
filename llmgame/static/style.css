@@ -99,7 +99,7 @@ header p {
 .topic-card {
     border: 2px solid #ccc;  /* Updated border */
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 0;
     text-align: center;
     cursor: pointer;
     transition: background-color 0.3s ease; 
@@ -107,7 +107,7 @@ header p {
     background-color: #67f079;
 }
 
-.topic-card h2 {
+.topic-card h2, .topic-card-surprise h2 {
     margin-bottom: 10px; 
     color: #333; /* A darker text color */
 }
@@ -115,6 +115,17 @@ header p {
 .topic-card:hover {
     background-color: #e8f0fe; /* A light blue hover color */
     box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+}
+
+.topic-card-surprise {
+    border: 2px solid #ccc;  /* Updated border */
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: background-color 0.3s ease; 
+    margin-top: 30px;
+    margin-bottom: 30px;
+    background-color: #f0b967;
 }
 
 .option-grid {

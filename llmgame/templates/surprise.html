@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quizmaster</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-section">
+        <div class="container" id="topicPage"> 
+            <h2>The chosen topic is:</h1>
+            <div class="topic-card-surprise" data-topic-name="{{topic}}">
+                <h2>{{topic}}</h2>
+            </div>
+            <button id="continueButton">Continue</button>
+        </div>
+
+        <div class="loader" id="loader"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+        $('#continueButton').click(function() {
+            document.getElementById('loader').style.display = 'block';
+            
+            let selTopic = "{{topic|safe}}";
+            console.log(selTopic);
+
+            let selectedTopic = encodeURIComponent(selTopic);
+            let url = "{{ url_for('llmgame.display_question') }}?selected_topic=" + selectedTopic;
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>
