@@ -4,14 +4,22 @@ from flask import (
     Blueprint, render_template, request, jsonify, session, redirect, url_for)
 from werkzeug.exceptions import abort
 
-from llmgame.ai_request import check_llm_server_status, single_query_llm, single_query_openai
+from llmgame.ai_request import (
+    #check_llm_server_status, single_query_llm, 
+    #single_query_openai, query_ollama, 
+    check_ollama_status, Ollama)
+
+from langchain_openai import ChatOpenAI
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain.prompts import PromptTemplate
 
 bp = Blueprint('llmgame', __name__)
 
 OFFLINE = True
-SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
-inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
-across a vast range of topics."
+# SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
+# inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
+# across a vast range of topics."
+RANDOM_LABEL = "Surprise me!"
 
 @bp.route('/')
 def index():
@@ -45,7 +53,7 @@ def display_question():
     topics = json.loads(request.args.get('all_topics')) 
 
     # Set up the question based on the topic
-    if selected_topic == "Random":
+    if selected_topic == RANDOM_LABEL:
         selected_topic = generate_random_topic(topics)
 
     session['topic'] = selected_topic
@@ -73,72 +81,80 @@ def next_question():
 
 def generate_topics():
     """Generate a list of 5 topics (plus Random)"""
+    # LM Studio
     # if check_llm_server_status() == 0: # pragma: no cover
     #     return abort(404, 'LLM server is not available.')
+    
+    # Ollama
+    if check_ollama_status() == 0: # pragma: no cover
+        return abort(404, 'Ollama is not available.')
 
-    instruction = "Generate 5 different topics for the game. \
-Return the single array of 5 topics in JSON format. \
-Make sure to generate only one JSON object.  \n\
-{ \
-\"topics\": [ \
-\"History\", \"Science\", \"Movies\", \"Music\", \"Sport\"] \
-} \n\
-{ \
-\"topics\": [ \
-\"Politics\", \"Economy\", \"Environment\", \"Computing\", \"Food\"] \
-} "
-
-    sys_msg = SYS_MSG
-
+    instruction = "Generate 5 different topics for the game"
+    
+    response_schemas = [
+        ResponseSchema(name="topics", description="array of topics completely unrelated")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    format_instructions = output_parser.get_format_instructions()
+    prompt = PromptTemplate(
+        template="Follow the user's instruction and make sure you are inspired by 'Who wants to be a millionaire'.\n{format_instructions}\n{instruction}",
+        input_variables=["instruction"],
+        partial_variables={"format_instructions": format_instructions},
+    )
     if OFFLINE:
-        llm_response = single_query_llm(instruction, "", sys_msg)
+        model = Ollama(model="mistral", temperature=0.8)
     else:
-        llm_response = single_query_openai(instruction, "", sys_msg)
+        model = ChatOpenAI(model="gpt-4", temperature=0.8)
+    chain = prompt | model | output_parser
+    
+    llm_response = chain.invoke({"instruction": instruction})
     if llm_response != "" and llm_response is not None:
-        # print (llm_response)
+        print (llm_response)
         if "topics" in llm_response:
-            # from str to python dict
-            response_json = json.loads(llm_response)
+            # from str to python dict - no longer needed
+            # response_json = json.loads(llm_response)
             # extract list from dict
-            topics = response_json['topics']
+            topics = llm_response['topics']
             # add random topic to list
-            topics.append("Random")
+            topics.append(RANDOM_LABEL)
             return topics
     
-    predef_topics = ["History", "Science", "Movies", "Music", "Sport", "Random"]
+    predef_topics = ["History", "Science", "Movies", "Music", "Sport", RANDOM_LABEL]
     return predef_topics
 
 
 def generate_random_topic(topics: list):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
-    # if check_llm_server_status() == 0: # pragma: no cover
-    #     return abort(404, 'LLM server is not available.')
-
-    instruction = "Generate one random topic for the game. \
-Return the single string in JSON format. \
-Do not pick any of these topics: " + ' ,'.join(topics) + ". \
-Two examples are: \n\
-{ \
-\"random_topic\": \"History\" \
-} \n\
-{ \
-\"random_topic\": \"Computing\" \
-}"
-
-    sys_msg = SYS_MSG
-
+    if check_ollama_status() == 0: # pragma: no cover
+        return abort(404, 'Ollama is not available.')
+    # remove Random from list
+    topics.pop()
+    instruction = "Generate one random topic for the game that has to be different from all these topics:\n" + '\n'.join(topics)
+    response_schemas = [
+        ResponseSchema(name="topic", description="string of the topic")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    format_instructions = output_parser.get_format_instructions()
+    prompt = PromptTemplate(
+        template="Follow the user's instruction and make sure you are inspired by 'Who wants to be a millionaire'.\n{format_instructions}\n{instruction}",
+        input_variables=["instruction"],
+        partial_variables={"format_instructions": format_instructions},
+    )
     if OFFLINE:
-        llm_response = single_query_llm(instruction, "", sys_msg)
+        model = Ollama(model="mistral", temperature=0.8)
     else:
-        llm_response = single_query_openai(instruction, "", sys_msg)
+        model = ChatOpenAI(model="gpt-4", temperature=0.8)
+    chain = prompt | model | output_parser
+    
+    llm_response = chain.invoke({"instruction": instruction})
     if llm_response != "" and llm_response is not None:
-        # print(llm_response)
-        if "random_topic" in llm_response:
-            # from str to python obj
-            response_json = json.loads(llm_response)
+        print(llm_response)
+        if "topic" in llm_response:
+            # from str to python obj - no longer needed
+            #response_json = json.loads(llm_response)
             # extract str from dict
-            random_topic = response_json['random_topic']
+            random_topic = llm_response['topic']
             return random_topic
 
     predef_random_topic = "Technology"
@@ -148,49 +164,51 @@ Two examples are: \n\
 def generate_question(topic: str):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
-    # if check_llm_server_status() == 0: # pragma: no cover
-    #     return abort(404, 'LLM server is not available.')
+    if check_ollama_status() == 0: # pragma: no cover
+        return abort(404, 'Ollama is not available.')
 
-    instruction = "Generate one question based on the chosen topic of " + topic + \
-" for the game. \
-Return the question, exactly four possible options and the correct answer in JSON format. \
+    instruction = "Generate one question based on the chosen topic of " + topic
+    response_schemas = [
+        ResponseSchema(name="question", 
+                       description="string of the question"),
+        ResponseSchema(name="options",
+                       description="list of four possible \
+                       answers to the question and each answer is a string"),
+        ResponseSchema(name="answer", 
+                       description="string of the correct answer to the question")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    format_instructions = output_parser.get_format_instructions()
+    prompt = PromptTemplate(
+        template="Follow the user's instruction and make sure you are inspired by the game \
+'Who wants to be a millionaire'. \
 Use the given index of the question to come up with questions \
 with increasing complexity. Its value can be between 1 and 15; if it is equal to 1, the question \
 will be extremely easy and if it is equal to 15, the question will be extremely difficult. \
-The index of the question is " + str(session['index']) + \
-". Make sure to generate only one JSON object. Three examples of the desired output are: \n \
-{ \
-\"question\": \"What is the capital of France?\" \
-\"options\": [ \"London\", \"Paris\", \"Rome\", \"Berlin\"] \
-\"answer\": \"Paris\" \
-} \n\
-{ \
-\"question\": \"Traditionally, mozzarella cheese is made from the milk of which Animal?\" \
-\"options\": [ \"Sheep\", \"Goat\", \"Moose\", \"Buffalo\"] \
-\"answer\": \"Buffalo\" \
-} \n\
-\"question\": \"Complete the title of the musical by Andrew Lloyd Webber, ‘Tell Me On A …’?\" \
-\"options\": [ \"Sunday\", \"Monday\", \"Tuesday\", \"Friday\"] \
-\"answer\": \"Sunday\" \
-}"
-
-    sys_msg = SYS_MSG
-
+The index of the question is " + str(session['index']) + "\
+Make sure the answer is among the list of options. \
+\n{format_instructions}\n{instruction}",
+        input_variables=["instruction"],
+        partial_variables={"format_instructions": format_instructions},
+    )
     if OFFLINE:
-        llm_response = single_query_llm(instruction, "", sys_msg)
+        model = Ollama(model="mistral", temperature=0.8)
     else:
-        llm_response = single_query_openai(instruction, "", sys_msg)
+        model = ChatOpenAI(model="gpt-4", temperature=0.8)
+    chain = prompt | model | output_parser
+
+    llm_response = chain.invoke({"instruction": instruction})
     if llm_response != "" and llm_response is not None:
-        # print(llm_response)
+        print(llm_response)
         if "question" in llm_response and "options" in llm_response and "answer" in llm_response:
-            # from str to python obj
-            response_json = json.loads(llm_response)
+            # from str to python obj - no longer needed
+            #response_json = json.loads(llm_response)
             # extract data from dict
-            question = response_json['question']
-            options = response_json['options']
-            answer = response_json['answer']
-            print(question)
-            print(answer)
+            question = llm_response['question']
+            options = llm_response['options']
+            answer = llm_response['answer']
+            #print(question)
+            #print(answer)
             
             return question, options, answer
 

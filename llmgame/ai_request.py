@@ -15,22 +15,40 @@ import requests
 import openai
 from openai import OpenAI
 
+from langchain_community.llms import Ollama
+
 # Retrieve the API key from an environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+LOCALHOST = "http://127.0.0.1"
 # LM Studio
-HOST = "http://127.0.0.1:1234"
-URL = HOST + "/v1/chat/completions"
+LMSTUDIO_PORT = 1234
+URL = LOCALHOST + ":" + str(LMSTUDIO_PORT) + "/v1/chat/completions"
+# Ollama
+OLLAMA_PORT = 11434
+OLLAMA_URL = LOCALHOST + ":" + str(OLLAMA_PORT) + "/api/"
 
 headers = {
     "Content-Type": "application/json"
 }
 
 
+def check_ollama_status(): # pragma: no cover
+    """ Check status of Ollama"""   
+    try:
+        response = requests.get(LOCALHOST + ":" + str(OLLAMA_PORT), timeout=10)
+
+        if response.status_code != 200:
+            return 0
+        return 1
+    except requests.exceptions.RequestException:
+        return 0
+
+
 def check_llm_server_status(): # pragma: no cover
     """ Check status of LLM server"""   
     try:
-        response = requests.get(HOST + "/v1/models", timeout=10)
+        response = requests.get(LOCALHOST + ":" + str(LMSTUDIO_PORT) + "/v1/models", timeout=10)
 
         if response.status_code != 200:
             return 0
@@ -122,3 +140,55 @@ def chat(system, user_assistant, offline=True): # pragma: no cover
 
     msgs = system_msg + user_assistant_msgs
     return query_llm(msgs) if offline else query_openai(msgs)
+
+
+def invoke_ollama(prompt):
+    """Send a request to the API endpoint of Ollama to interact"""
+    llm = Ollama(model="mistral")
+    return llm.invoke(prompt)
+
+
+def query_ollama(prompt): # pragma: no cover
+    """ Send query to Ollama \n
+    Generate a response for a given prompt with a provided model.
+    """
+    try:
+        data = {
+            "model": "mistral",
+            "prompt": prompt,
+            "stream": False
+        }
+        response = requests.post(OLLAMA_URL + "generate", headers=headers, json=data, verify=False)
+        response_json = json.loads(response.text)
+        return response_json['response']
+    except requests.exceptions.RequestException as e:
+        print("An exception occurred: ", e)
+        return None
+
+
+def query_ollama_chat(messages): # pragma: no cover
+    """ Send query to Ollama \n
+    Generate the next message in a chat with a provided model.
+    Format for messages is:\n
+    [{"role": "system", "content": system_message},
+    {"role": "user", "content": prompt}]
+    """
+    try:
+        data = {
+            "model": "mistral",
+            "messages": messages,
+            "stream": False
+        }
+        response = requests.post(OLLAMA_URL + "chat", headers=headers, json=data, verify=False)
+        response_json = json.loads(response.text)
+        return response_json['message']['content']
+    except requests.exceptions.RequestException as e:
+        print("An exception occurred: ", e)
+        return None
+
+if __name__ == "__main__":
+#     print(query_ollama("What is the colour of the sky? Just tell me the colour."))
+#     print(query_ollama_chat([{"role": "user", "content": "What is the colour of the sky? Just tell me the colour."}]))
+    # print(struct_output_ollama("Generate 5 different topics for the game"))
+    # print(invoke_ollama("Generate 5 different topics for the game"))
+    check_ollama_status()
