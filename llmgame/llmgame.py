@@ -5,8 +5,9 @@ from flask import (
 from werkzeug.exceptions import abort
 
 from llmgame.ai_request import (
-    check_llm_server_status, single_query_llm, 
-    single_query_openai, query_ollama, Ollama)
+    #check_llm_server_status, single_query_llm, 
+    #single_query_openai, query_ollama, 
+    check_ollama_status, Ollama)
 
 from langchain_openai import ChatOpenAI
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
@@ -15,9 +16,9 @@ from langchain.prompts import PromptTemplate
 bp = Blueprint('llmgame', __name__)
 
 OFFLINE = True
-SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
-inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
-across a vast range of topics."
+# SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
+# inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
+# across a vast range of topics."
 RANDOM_LABEL = "Surprise me!"
 
 @bp.route('/')
@@ -83,6 +84,10 @@ def generate_topics():
     # LM Studio
     # if check_llm_server_status() == 0: # pragma: no cover
     #     return abort(404, 'LLM server is not available.')
+    
+    # Ollama
+    if check_ollama_status() == 0: # pragma: no cover
+        return abort(404, 'Ollama is not available.')
 
     instruction = "Generate 5 different topics for the game"
     
@@ -121,8 +126,8 @@ def generate_topics():
 def generate_random_topic(topics: list):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
-    # if check_llm_server_status() == 0: # pragma: no cover
-    #     return abort(404, 'LLM server is not available.')
+    if check_ollama_status() == 0: # pragma: no cover
+        return abort(404, 'Ollama is not available.')
     # remove Random from list
     topics.pop()
     instruction = "Generate one random topic for the game that has to be different from all these topics:\n" + '\n'.join(topics)
@@ -159,8 +164,8 @@ def generate_random_topic(topics: list):
 def generate_question(topic: str):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
-    # if check_llm_server_status() == 0: # pragma: no cover
-    #     return abort(404, 'LLM server is not available.')
+    if check_ollama_status() == 0: # pragma: no cover
+        return abort(404, 'Ollama is not available.')
 
     instruction = "Generate one question based on the chosen topic of " + topic
     response_schemas = [
