@@ -8,6 +8,7 @@ from llmgame.ai_request import check_llm_server_status, single_query_llm, single
 
 bp = Blueprint('llmgame', __name__)
 
+OFFLINE = True
 SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
 inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
 across a vast range of topics."
@@ -77,7 +78,7 @@ def generate_topics():
 
     instruction = "Generate 5 different topics for the game. \
 Return the single array of 5 topics in JSON format. \
-Two examples are: \n\
+Make sure to generate only one JSON object.  \n\
 { \
 \"topics\": [ \
 \"History\", \"Science\", \"Movies\", \"Music\", \"Sport\"] \
@@ -85,11 +86,14 @@ Two examples are: \n\
 { \
 \"topics\": [ \
 \"Politics\", \"Economy\", \"Environment\", \"Computing\", \"Food\"] \
-}   "
+} "
 
     sys_msg = SYS_MSG
 
-    llm_response = single_query_openai(instruction, "", sys_msg)
+    if OFFLINE:
+        llm_response = single_query_llm(instruction, "", sys_msg)
+    else:
+        llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:
         # print (llm_response)
         if "topics" in llm_response:
@@ -124,7 +128,10 @@ Two examples are: \n\
 
     sys_msg = SYS_MSG
 
-    llm_response = single_query_openai(instruction, "", sys_msg)
+    if OFFLINE:
+        llm_response = single_query_llm(instruction, "", sys_msg)
+    else:
+        llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:
         # print(llm_response)
         if "random_topic" in llm_response:
@@ -145,13 +152,13 @@ def generate_question(topic: str):
     #     return abort(404, 'LLM server is not available.')
 
     instruction = "Generate one question based on the chosen topic of " + topic + \
-"for the game. \
-Return the question, four possible options and the correct answer in JSON format. \
+" for the game. \
+Return the question, exactly four possible options and the correct answer in JSON format. \
 Use the given index of the question to come up with questions \
 with increasing complexity. Its value can be between 1 and 15; if it is equal to 1, the question \
 will be extremely easy and if it is equal to 15, the question will be extremely difficult. \
 The index of the question is " + str(session['index']) + \
-". Three examples are - listed by increasing difficulty: \n \
+". Make sure to generate only one JSON object. Three examples of the desired output are: \n \
 { \
 \"question\": \"What is the capital of France?\" \
 \"options\": [ \"London\", \"Paris\", \"Rome\", \"Berlin\"] \
@@ -169,7 +176,10 @@ The index of the question is " + str(session['index']) + \
 
     sys_msg = SYS_MSG
 
-    llm_response = single_query_openai(instruction, "", sys_msg)
+    if OFFLINE:
+        llm_response = single_query_llm(instruction, "", sys_msg)
+    else:
+        llm_response = single_query_openai(instruction, "", sys_msg)
     if llm_response != "" and llm_response is not None:
         # print(llm_response)
         if "question" in llm_response and "options" in llm_response and "answer" in llm_response:
