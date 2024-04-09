@@ -11,10 +11,14 @@
         <aside id="lifeline-sidebar" >
             <h2>Lifelines</h2>
             <ul id="lifeline-list">
-            <li class="lifeline-item">50:50</li>
-            <li class="lifeline-item">Flip the Question</li>
-            <li class="lifeline-item">Ask the Host</li>
-            <li class="lifeline-item">Ask the Audience</li>
+            <li class="lifeline-item">
+                <img src="static/50-50.png" alt="50-50" title="50-50" class="lifeline-img"></li>
+            <li class="lifeline-item">
+                <img src="static/flip.png" alt="Flip the Question" title="Flip the Question" class="lifeline-img"></li>
+            <li class="lifeline-item">
+                <img src="static/host.png" alt="Ask the Host" title="Ask the Host" class="lifeline-img"></li>
+            <li class="lifeline-item">
+                <img src="static/audience.png" alt="Ask the Audience" title="Ask the Audience" class="lifeline-img"></li>
             </ul>
         </aside>
 
@@ -72,6 +76,11 @@
 
         $('#quit-button').click(function() {
             window.location.href="{{ url_for( 'llmgame.game_over' ) }}";
+        });
+
+        $('.lifeline-img').click(function() {
+            var altName = $(this).attr('alt');
+            console.log(altName);
         });
     </script>
 </body>

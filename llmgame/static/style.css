@@ -209,6 +209,13 @@ header p {
    margin-bottom: 10px;
 }
 
+.lifeline-img {
+    width: 50%; 
+    min-width: 150px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
 .question-item.current {
     font-weight: bold;
     color: #337ab7; /*  A highlight color */ 
