@@ -48,5 +48,7 @@ function setCurrentQuestion(targetQuestionItem) {
     });
   
     // Add 'current' class to clicked item
-    targetQuestionItem.classList.add('current'); 
+    if(targetQuestionItem != undefined){
+        targetQuestionItem.classList.add('current'); 
+    }
 }

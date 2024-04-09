@@ -206,8 +206,7 @@ def generate_random_topic(topics: list):
 
 
 def generate_question(topic: str):
-    """Generate the 6th topic which can be 
-    anything but the 5 topics already generated"""
+    """Generate a question based on the given topic"""
     if check_ollama_status() == 0: # pragma: no cover
         return abort(404, 'Ollama is not available.')
 
@@ -267,11 +266,10 @@ Make sure the answer is among the list of options. \
         # answer = "Paris" 
         # return question, options, answer
 
-        error = "Failed to generate a question"
-        return abort(404, error)
+        return None, None, None
     except OutputParserException:
-        error = "Failed to generate a question - (parsing LLM response)"
-        return abort(404, error)
+        print("Failed to generate a question - (parsing LLM response)")
+        return None, None, None
     
 
 @bp.route('/check_answer', methods=['POST'])
