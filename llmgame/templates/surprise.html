@@ -27,9 +27,16 @@
             let selTopic = "{{topic|safe}}";
             console.log(selTopic);
 
-            let selectedTopic = encodeURIComponent(selTopic);
-            let url = "{{ url_for('llmgame.display_question') }}?selected_topic=" + selectedTopic;
-            window.location.href = url;
+            const question_url = {{ url_for('llmgame.display_question')|tojson }};
+            fetch(question_url, {
+                    "method": "POST",
+                    "headers": {"Content-Type": "application/json"},
+                    "body": JSON.stringify(selTopic),
+                }).then((response) => {
+                    console.log(response);
+                }).then((html) => {
+                    window.location.href = "{{ url_for('llmgame.display_question') }}";
+                });
         });
     </script>
 </body>

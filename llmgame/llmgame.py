@@ -12,6 +12,7 @@ from llmgame.ai_request import (
 from langchain_openai import ChatOpenAI
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts import PromptTemplate
+from langchain_core.exceptions import OutputParserException
 
 bp = Blueprint('llmgame', __name__)
 
@@ -23,12 +24,22 @@ RANDOM_LABEL = "Surprise me!"
 
 @bp.route('/')
 def index():
+    """Root endpoint"""
     return render_template('index.html')
+
+
+@bp.route('/game_over')
+def game_over():
+    """Endpoint to show the last message to users"""
+    if not session['end']:
+        return render_template('milestone.html', question=session['index'])
+    return render_template('gameover.html')
 
 
 @bp.route('/welcome', methods=('GET', 'POST'))
 def welcome():
-    
+    """Endpoint to show the list of topics
+    for the first question"""
     if request.method == 'POST':
         name = request.form['name']
 
@@ -37,6 +48,11 @@ def welcome():
             
         session['name'] = name
         session['index'] = 1
+        session['end'] = False
+        session['topic'] = None
+        session['question'] = None
+        session['answer'] = None
+        session['options'] = []
         
         topics = generate_topics()        
 
@@ -47,37 +63,59 @@ def welcome():
     return render_template('welcome.html')
 
 
-@bp.route('/display_surprise') 
+@bp.route('/surprise', methods=('GET', 'POST'))
 def display_surprise():
-    topics = json.loads(request.args.get('all_topics')) 
-    
-    topic = generate_random_topic(topics)
+    """Endpoint to show the random topic"""
+    if request.method == 'POST':
+        topics = request.get_json()
+        topic = generate_random_topic(topics)
+        session['topic'] = topic
+        return topic
 
     return render_template('surprise.html', 
-                           topic=topic) 
+                           topic=session['topic']) 
 
 
-@bp.route('/display_question') 
+@bp.route('/question', methods=('GET', 'POST'))
 def display_question():
-    selected_topic = request.args.get('selected_topic')
+    """Endpoint to show the question to users"""
+    if request.method == 'POST':
+        selected_topic = request.get_json()
+        # Set up the question based on the topic
+        session['topic'] = selected_topic
+        question, options, answer = generate_question(selected_topic)
+        if question is None:
+            # try one more time
+            print("Trying to generate question one more time...")
+            question, options, answer = generate_question(selected_topic)
+            if question is None:
+                # give up
+                print("Failed to generate question! Back to index.")
+                return redirect(url_for('llmgame.index'))
+        session['question'] = question
+        session['answer'] = answer
+        session['options'] = options
+        return question
 
-    # Set up the question based on the topic
-    session['topic'] = selected_topic
+    if not session['end']:
+        if session['question'] is None:
+            # something went wrong
+            return abort(404, "Something went wrong generating the question.")
+        return render_template('question.html', 
+                            question=session['question'], 
+                            options=session['options'],
+                            current_question=session['index'])
+    else:
+        # show game over message
+        return redirect(url_for('llmgame.game_over')) 
 
-    question, options, answer = generate_question(selected_topic)
-    session['answer'] = answer
 
-    return render_template('question.html', 
-                           question=question, 
-                           options=options,
-                           current_question=session['index']) 
-
-
-@bp.route('/next', methods=('GET', 'POST'))
+@bp.route('/topics', methods=('GET', 'POST'))
 def next_question():
-    
+    """Endpoint to show the list of topics
+    for following questions"""
     session['index'] += 1
-    
+
     topics = generate_topics()        
 
     return render_template('main.html',
@@ -203,29 +241,38 @@ Make sure the answer is among the list of options. \
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
 
-    llm_response = chain.invoke({"instruction": instruction})
-    if llm_response != "" and llm_response is not None:
-        print(llm_response)
-        if "question" in llm_response and "options" in llm_response and "answer" in llm_response:
-            # from str to python obj - no longer needed
-            #response_json = json.loads(llm_response)
-            # extract data from dict
-            question = llm_response['question']
-            options = llm_response['options']
-            answer = llm_response['answer']
-            #print(question)
-            #print(answer)
-            
-            return question, options, answer
+    try:
+        llm_response = chain.invoke({"instruction": instruction})
+        if llm_response != "" and llm_response is not None:
+            print(topic)
+            print(llm_response)
+            if "question" in llm_response and "options" in llm_response and "answer" in llm_response:
+                # from str to python obj - no longer needed
+                #response_json = json.loads(llm_response)
+                # extract data from dict
+                question = llm_response['question']
+                options = llm_response['options']
+                answer = llm_response['answer']
+                #print(question)
+                #print(answer)
+                if len(options) != 4 or str(answer) not in options:
+                    # generate another question
+                    return None, None, None
+                
+                return question, options, answer
 
-    # for testing purposes
-    # question = "Placeholder: What is the capital of France?" 
-    # options = ["London", "Paris", "Berlin", "Rome"]  
-    # answer = "Paris" 
-    # return question, options, answer
+        # for testing purposes
+        # question = "Placeholder: What is the capital of France?" 
+        # options = ["London", "Paris", "Berlin", "Rome"]  
+        # answer = "Paris" 
+        # return question, options, answer
 
-    error = "Failed to generate a question"
-    return abort(404, error)
+        error = "Failed to generate a question"
+        return abort(404, error)
+    except OutputParserException:
+        error = "Failed to generate a question - (parsing LLM response)"
+        return abort(404, error)
+    
 
 @bp.route('/check_answer', methods=['POST'])
 def check_answer():
@@ -234,8 +281,12 @@ def check_answer():
 
     if selected_option == session['answer']:
         feedback = "Correct answer!"
+        # set to None to prevent the following question
+        # to be the same question again
+        session['question'] = None
     else:
         feedback = "Wrong! The correct answer is " + session['answer']
+        session['end'] = True
 
     return jsonify({'feedback': feedback, 'answer': session['answer']})
 

@@ -46,7 +46,7 @@ header p {
     margin-bottom: 20px;
 }
 
-#startButton, #continueButton {
+#startButton, #continueButton, #tryButton {
     background-color: #3898EC;
     color: #fff;
     border: none;
@@ -57,7 +57,7 @@ header p {
     transition: background-color 0.3s ease; 
 }
 
-#startButton:hover {
+#startButton:hover, #continueButton:hover, #tryButton:hover {
     background-color: #2c73a5; 
 }
 
@@ -190,7 +190,7 @@ header p {
     background-color: #1e95e9;  /* Darker blue on hover */
 }
 
-#question-sidebar, #hint-sidebar {
+#question-sidebar, #lifeline-sidebar {
     width: 15%;
     float: right; /* Or float: left - decide the position  */
     background-color: #f0f0f0; /* Light background color */
@@ -199,13 +199,13 @@ header p {
     text-align: center;
 }
 
-#question-list, #hint-list {
+#question-list, #lifeline-list {
     list-style: none;
     padding: 0; 
     margin-top: 15px;
 }
 
-.question-item, .hint-item {
+.question-item, .lifeline-item {
    margin-bottom: 10px;
 }
 

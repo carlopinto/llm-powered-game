@@ -8,12 +8,13 @@
 </head>
 <body>
     <div class="main-section">
-        <aside id="hint-sidebar" >
-            <h2>Hints</h2>
-            <ul id="hint-list">
-            <li class="hint-item">Hint 1</li>
-            <li class="hint-item">Hint 2</li>
-            <li class="hint-item">Hint 3</li>
+        <aside id="lifeline-sidebar" >
+            <h2>Lifelines</h2>
+            <ul id="lifeline-list">
+            <li class="lifeline-item">50:50</li>
+            <li class="lifeline-item">Flip the Question</li>
+            <li class="lifeline-item">Ask the Host</li>
+            <li class="lifeline-item">Ask the Audience</li>
             </ul>
         </aside>
 
@@ -70,7 +71,7 @@
         });
 
         $('#quit-button').click(function() {
-            window.location.href="{{ url_for( 'llmgame.index' ) }}";
+            window.location.href="{{ url_for( 'llmgame.game_over' ) }}";
         });
     </script>
 </body>

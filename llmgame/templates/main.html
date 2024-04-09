@@ -35,16 +35,30 @@
             // Collect all topics
             var topics = {{ topics|safe }};
 
-            let selectedTopic = encodeURIComponent(selTopic);
-            let allTopics = encodeURIComponent(JSON.stringify(topics));
-            let url = "";
             if(selTopic=="Surprise me!"){
-                url = "{{ url_for('llmgame.display_surprise') }}?all_topics=" + allTopics;
+                const surprise_url = {{ url_for('llmgame.display_surprise')|tojson }};
+                fetch(surprise_url, {
+                        "method": "POST",
+                        "headers": {"Content-Type": "application/json"},
+                        "body": JSON.stringify(topics),
+                    }).then((response) => {
+                        console.log(response);
+                    }).then((html) => {
+                        window.location.href = "{{ url_for('llmgame.display_surprise') }}";
+                    });
             }
-            else{
-                url = "{{ url_for('llmgame.display_question') }}?selected_topic=" + selectedTopic;
+            else {
+                const question_url = {{ url_for('llmgame.display_question')|tojson }};
+                fetch(question_url, {
+                        "method": "POST",
+                        "headers": {"Content-Type": "application/json"},
+                        "body": JSON.stringify(selTopic),
+                    }).then((response) => {
+                        console.log(response);
+                    }).then((html) => {
+                        window.location.href = "{{ url_for('llmgame.display_question') }}";
+                    });
             }
-            window.location.href = url;
         });
     </script>
 </body>
