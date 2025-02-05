@@ -46,7 +46,9 @@ header p {
     margin-bottom: 20px;
 }
 
-#startButton, #continueButton, #tryButton {
+#startButton,
+#continueButton,
+#tryButton {
     background-color: #3898EC;
     color: #fff;
     border: none;
@@ -57,7 +59,9 @@ header p {
     transition: background-color 0.3s ease; 
 }
 
-#startButton:hover, #continueButton:hover, #tryButton:hover {
+#startButton:hover,
+#continueButton:hover,
+#tryButton:hover {
     background-color: #2c73a5; 
 }
 
@@ -85,8 +89,13 @@ header p {
   }
   
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
   }
 
 .topic-grid {
@@ -107,14 +116,15 @@ header p {
     background-color: #67f079;
 }
 
-.topic-card h2, .topic-card-surprise h2 {
+.topic-card h2,
+.topic-card-surprise h2 {
     margin-bottom: 10px; 
     color: #333; /* A darker text color */
 }
 
 .topic-card:hover {
     background-color: #e8f0fe; /* A light blue hover color */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .topic-card-surprise {
@@ -156,7 +166,7 @@ header p {
 
 .option-card:hover {
     background-color: #ffe44a; /* A light blue hover color */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .option-card.disabled {
@@ -190,7 +200,8 @@ header p {
     background-color: #1e95e9;  /* Darker blue on hover */
 }
 
-#question-sidebar, #lifeline-sidebar {
+#question-sidebar,
+#lifeline-sidebar {
     width: 15%;
     float: right; /* Or float: left - decide the position  */
     background-color: #f0f0f0; /* Light background color */
@@ -199,13 +210,15 @@ header p {
     text-align: center;
 }
 
-#question-list, #lifeline-list {
+#question-list,
+#lifeline-list {
     list-style: none;
     padding: 0; 
     margin-top: 15px;
 }
 
-.question-item, .lifeline-item {
+.question-item,
+.lifeline-item {
    margin-bottom: 10px;
 }
 
@@ -218,6 +231,54 @@ header p {
 
 .question-item.current {
     font-weight: bold;
-    color: #337ab7; /*  A highlight color */ 
+    color: #337ab7; /*  A highlight color */
     background-color: #fdf90e; /* Light background color */
 }
+
+/* Custom confirm box */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-dialog {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.buttons-container {
+    display: flex;
+    justify-content:  space-between;
+    margin-top: 15px;
+}
+
+.confirm-button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cancel-button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/*  */
