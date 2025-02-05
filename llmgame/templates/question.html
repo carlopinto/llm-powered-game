@@ -1,66 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Quizmaster</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="main-section">
-        <aside id="lifeline-sidebar" >
-            <h2>Lifelines</h2>
-            <ul id="lifeline-list">
-            <li class="lifeline-item">
-                <img src="static/50-50.png" alt="50-50" title="50-50" class="lifeline-img"></li>
-            <li class="lifeline-item">
-                <img src="static/flip.png" alt="Flip the Question" title="Flip the Question" class="lifeline-img"></li>
-            <li class="lifeline-item">
-                <img src="static/host.png" alt="Ask the Host" title="Ask the Host" class="lifeline-img"></li>
-            <li class="lifeline-item">
-                <img src="static/audience.png" alt="Ask the Audience" title="Ask the Audience" class="lifeline-img"></li>
-            </ul>
-        </aside>
+{% extends 'base.html' %}
 
-        <div class="container" id="questionPage"> 
-            <div class="question-area"><h1>{{ question }}</h1></div>
-            <br>
-            <div class="option-grid">
-                {% for option in options %}
-                    <div class="option-card" data-option-name="{{option}}" id="{{option}}"><h2>{{ option }}</h2></div>
-                {% endfor %}
-            </div>
-            <div class="question-feedback" id="feedback"></div> 
-            <div class="question-buttons" id="buttons">
-                <button class="quit-button" id="quit-button" >Quit</button>
-                <button class="next-button" id="next-button" style="display: none;" >Next</button>
-            </div> 
+{% block content %}
+    <aside id="lifeline-sidebar" >
+        <h2>Lifelines</h2>
+        <ul id="lifeline-list">
+        <li class="lifeline-item">
+            <img src="static/50-50.png" alt="50-50" title="50-50" class="lifeline-img"></li>
+        <li class="lifeline-item">
+            <img src="static/flip.png" alt="Flip the Question" title="Flip the Question" class="lifeline-img"></li>
+        <li class="lifeline-item">
+            <img src="static/host.png" alt="Ask the Host" title="Ask the Host" class="lifeline-img"></li>
+        <li class="lifeline-item">
+            <img src="static/audience.png" alt="Ask the Audience" title="Ask the Audience" class="lifeline-img"></li>
+        </ul>
+    </aside>
+
+    <div class="container" id="questionPage"> 
+        <div class="question-area"><h1>{{ question }}</h1></div>
+        <br>
+        <div class="option-grid">
+            {% for option in options %}
+                <div class="option-card" data-option-name="{{option}}" id="{{option}}"><h2>{{ option }}</h2></div>
+            {% endfor %}
         </div>
-
-        <aside id="question-sidebar">
-            <h2>Questions</h2>
-            <ul id="question-list">
-            <li class="question-item current">Question 1</li>
-            <li class="question-item">Question 2</li>
-            <li class="question-item">Question 3</li>
-            <li class="question-item">Question 4</li>
-            <li class="question-item">Question 5</li>
-            <li class="question-item">Question 6</li>
-            <li class="question-item">Question 7</li>
-            <li class="question-item">Question 8</li>
-            <li class="question-item">Question 9</li>
-            <li class="question-item">Question 10</li>
-            <li class="question-item">Question 11</li>
-            <li class="question-item">Question 12</li>
-            <li class="question-item">Question 13</li>
-            <li class="question-item">Question 14</li>
-            <li class="question-item">Question 15</li>
-            </ul>
-        </aside>
-
-        <div class="loader" id="loader"></div>
+        <div class="question-feedback" id="feedback"></div> 
+        <div class="question-buttons" id="buttons">
+            <button class="quit-button" id="quit-button" >Quit</button>
+            <button class="next-button" id="next-button" style="display: none;" >Next</button>
+        </div> 
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <aside id="question-sidebar">
+        <h2>Questions</h2>
+        <ul id="question-list">
+        <li class="question-item current">Question 1</li>
+        <li class="question-item">Question 2</li>
+        <li class="question-item">Question 3</li>
+        <li class="question-item">Question 4</li>
+        <li class="question-item">Question 5</li>
+        <li class="question-item">Question 6</li>
+        <li class="question-item">Question 7</li>
+        <li class="question-item">Question 8</li>
+        <li class="question-item">Question 9</li>
+        <li class="question-item">Question 10</li>
+        <li class="question-item">Question 11</li>
+        <li class="question-item">Question 12</li>
+        <li class="question-item">Question 13</li>
+        <li class="question-item">Question 14</li>
+        <li class="question-item">Question 15</li>
+        </ul>
+    </aside>
+
+    <div class="loader" id="loader"></div>
+
     <script src="{{url_for('static', filename='question.js')}}"></script>
     <script>
         const questionList = document.getElementById('question-list');
@@ -83,5 +75,4 @@
             console.log(altName);
         });
     </script>
-</body>
-</html>
+{% endblock %}

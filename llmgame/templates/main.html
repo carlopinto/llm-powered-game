@@ -1,32 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Quizmaster</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="main-section">
-        <div class="container" id="topicPage"> 
-            <h1>Hello, {{name}}</h1>
-            <h2>Choose Your Trivia Battleground</h1>
-            <p>It's time to pick a topic.</p>
-            <div class="topic-grid">
-                {% for topic in topics %}
-                    <div class="topic-card" data-topic-name="{{topic}}">
-                        <h2>{{topic}}</h2>
-                    </div>
-                {% endfor %}
-            </div>
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="container" id="topicPage"> 
+        <h1>Hello, {{name}}</h1>
+        <h2>Choose Your Trivia Battleground</h1>
+        <p>It's time to pick a topic.</p>
+        <div class="topic-grid">
+            {% for topic in topics %}
+                <div class="topic-card" data-topic-name="{{topic}}">
+                    <h2>{{topic}}</h2>
+                </div>
+            {% endfor %}
         </div>
-
-        <div class="loader" id="loader"></div>
+        <div class="question-buttons" id="buttons">
+            <button class="quit-button" id="quit-button" >Quit</button>
+        </div> 
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
-
         $('.topic-card').click(function() {
             document.getElementById('loader').style.display = 'block';
             
@@ -60,6 +50,12 @@
                     });
             }
         });
+        $('#quit-button').click(function() {
+            window.location.href="{{ url_for( 'llmgame.game_over' ) }}";
+        });
     </script>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+    <div class="loader" id="loader"></div>
+{% endblock %}

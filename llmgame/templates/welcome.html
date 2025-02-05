@@ -1,27 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Quizmaster</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="main-section">
-        <div class="container" id="welcomePage"> 
-            <header>
-                <h1>Welcome, Challenger!</h1>
-                <p>Enter your name to embark on this quizzing quest:</p>
-            </header>
-            <form method="post">
-                <input type="text" id="name" name="name" placeholder="Your Name" value="{{ request.form['name'] }}">
-                <button id="continueButton">Continue</button>
-            </form>
-        </div>
+{% extends 'base.html' %}
 
-        <div class="loader" id="loader"></div>
+{% block header %}
+    <div class="container" id="welcomePage"> 
+        <h1>Welcome, Challenger!</h1>
+        <p>Enter your name to embark on this quizzing quest:</p>
+        <form method="post">
+            <input type="text" id="name" name="name" placeholder="Your Name" value="{{ request.form['name'] }}">
+            <button id="continueButton">Continue</button>
+        </form>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
     <script>
          $("#continueButton").click(function() {
             document.getElementById('loader').style.display = 'block';
@@ -29,5 +17,8 @@
 
         // Future code to handle clicking 'continueButton' 
     </script>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+    <div class="loader" id="loader"></div>
+{% endblock %}

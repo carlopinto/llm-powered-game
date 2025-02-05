@@ -1,28 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Quizmaster</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="main-section">
-        <div class="container">
-            <header>
-                <h1>Well Done!</h1>
-                <p>You have reached question number {{question}}</p>
-            </header>
+{% extends 'base.html' %}
 
-            <button id="tryButton">Try Again</button>
-        </div>
+{% block header %}
+    <div class="container">
+        <h1>Well Done!</h1>
+        <p>You have reached question number {{question}}</p>
+
+        <button id="tryButton">Try Again</button>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
     <script>
         // Placeholder - Your existing or future JS code will go here
         $('#tryButton').click(function() {
             window.location.href="{{ url_for( 'llmgame.index' ) }}";
         });
     </script>
-</body>
-</html>
+{% endblock %}
