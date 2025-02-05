@@ -1,5 +1,6 @@
 """"""
 import json
+import random
 from flask import (
     Blueprint, render_template, request, jsonify, session, redirect, url_for)
 from werkzeug.exceptions import abort
@@ -53,6 +54,9 @@ def welcome():
         session['question'] = None
         session['answer'] = None
         session['options'] = []
+        # lifelines can be used only once
+        # value will change to 0 when used
+        session['lifelines'] = [1, 1, 1, 1]
         
         topics = generate_topics()        
 
@@ -104,7 +108,8 @@ def display_question():
         return render_template('question.html', 
                             question=session['question'], 
                             options=session['options'],
-                            current_question=session['index'])
+                            current_question=session['index'],
+                            lifelines=session['lifelines'])
     else:
         # show game over message
         return redirect(url_for('llmgame.game_over')) 
@@ -133,7 +138,7 @@ def generate_topics():
     if check_ollama_status() == 0: # pragma: no cover
         return abort(404, 'Ollama is not available.')
 
-    instruction = "Generate 5 different topics for the game"
+    instruction = "Generate 5 different topics for the game. Each topic can have maximum 2 words."
     
     response_schemas = [
         ResponseSchema(name="topics", description="array of topics completely unrelated")
@@ -228,6 +233,8 @@ def generate_question(topic: str):
 Use the given index of the question to come up with questions \
 with increasing complexity. Its value can be between 1 and 15; if it is equal to 1, the question \
 will be extremely easy and if it is equal to 15, the question will be extremely difficult. \
+Higher the value, more complex the question will be. \
+Lower the value, more simple the question will be. \
 The index of the question is " + str(session['index']) + "\
 Make sure the answer is among the list of options. \
 \n{format_instructions}\n{instruction}",
@@ -288,3 +295,35 @@ def check_answer():
 
     return jsonify({'feedback': feedback, 'answer': session['answer']})
 
+
+@bp.route('/remove_options', methods=['POST'])
+def remove_options():
+    """"""
+    incorrect_answers = remove_two_answers(session['options'], session['answer'])
+
+    # update lifeline flag
+    session['lifelines'][0] = 0
+    
+    return jsonify({'first': incorrect_answers[0], 'second': incorrect_answers[1]})
+
+
+def remove_two_answers(options, answer):
+    """
+    Selects two random incorrect answers from a list of options.
+
+    Args:
+        options: A list of all possible options.
+        answer: The correct answer among the options.
+
+    Returns:
+        A list containing two randomly selected incorrect answers.
+    """
+    
+    incorrect_answers = []
+    while len(incorrect_answers) < 2:
+        incorrect_answer = random.choice(options)
+        if incorrect_answer != answer and incorrect_answer not in incorrect_answers:
+            incorrect_answers.append(incorrect_answer)
+
+    return incorrect_answers    
+    

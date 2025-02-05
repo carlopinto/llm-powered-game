@@ -74,7 +74,25 @@
 
         $('.lifeline-img').click(function() {
             var altName = $(this).attr('alt');
-            console.log(altName);
+            // console.log(altName);
+            customConfirm("Are you sure you want to use this lifeline?", altName)
+            .then((confirmed) => {
+                if (confirmed) {
+                    if ( altName == "50-50")
+                    {
+                        $.ajax({
+                            url: '/remove_options',
+                            method: 'POST',
+                            data: {
+                            },
+                            success: function (response) {
+                                document.getElementById(response.first).style.visibility = 'hidden';
+                                document.getElementById(response.second).style.visibility = 'hidden';
+                            }
+                        });
+                    }
+                }
+            });
         });
     </script>
 {% endblock %}

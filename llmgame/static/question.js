@@ -2,7 +2,7 @@
 $('.option-card').click(function () {
     let selOption = $(this).data('option-name');
     //console.log(selOption);
-    customConfirm("Are you sure you want to submit this answer?")
+    customConfirm("Are you sure you want to submit this answer?", selOption)
         .then((confirmed) => {
             if (confirmed) {
                 // User confirmed, proceed with the AJAX request
@@ -46,15 +46,19 @@ $('.option-card').click(function () {
     );
 });
 
-function customConfirm(message) {
+function customConfirm(message, selectedOption) {
     const overlay = document.createElement('div');
     overlay.classList.add('confirm-overlay');
 
     const dialog = document.createElement('div');
     dialog.classList.add('confirm-dialog');
 
+    const optionText = document.createElement('p');
+    optionText.innerHTML = `Selected Option: <b>${selectedOption}</b>`; 
+
     const messageText = document.createElement('p');
     messageText.textContent = message;
+    messageText.style.textAlign = 'center';
 
     const buttonsContainer = document.createElement('div');
     buttonsContainer.classList.add('buttons-container');
@@ -70,6 +74,8 @@ function customConfirm(message) {
     buttonsContainer.appendChild(confirmButton);
     buttonsContainer.appendChild(cancelButton);
 
+    dialog.appendChild(optionText);
+    dialog.appendChild(document.createElement('br'));
     dialog.appendChild(messageText);
     dialog.appendChild(buttonsContainer);
     overlay.appendChild(dialog);
