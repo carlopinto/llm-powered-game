@@ -15,7 +15,7 @@ import requests
 import openai
 from openai import OpenAI
 
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
 
 # Retrieve the API key from an environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -144,7 +144,7 @@ def chat(system, user_assistant, offline=True): # pragma: no cover
 
 def invoke_ollama(prompt):
     """Send a request to the API endpoint of Ollama to interact"""
-    llm = Ollama(model="mistral")
+    llm = OllamaLLM(model="mistral")
     return llm.invoke(prompt)
 
 

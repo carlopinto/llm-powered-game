@@ -7,7 +7,7 @@ from werkzeug.exceptions import abort
 from llmgame.ai_request import (
     #check_llm_server_status, single_query_llm, 
     #single_query_openai, query_ollama, 
-    check_ollama_status, Ollama)
+    check_ollama_status, OllamaLLM)
 
 from langchain_openai import ChatOpenAI
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
@@ -146,7 +146,7 @@ def generate_topics():
         partial_variables={"format_instructions": format_instructions},
     )
     if OFFLINE:
-        model = Ollama(model="mistral", temperature=0.8)
+        model = OllamaLLM(model="mistral", temperature=0.8)
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
@@ -186,7 +186,7 @@ def generate_random_topic(topics: list):
         partial_variables={"format_instructions": format_instructions},
     )
     if OFFLINE:
-        model = Ollama(model="mistral", temperature=0.8)
+        model = OllamaLLM(model="mistral", temperature=0.8)
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
@@ -235,7 +235,7 @@ Make sure the answer is among the list of options. \
         partial_variables={"format_instructions": format_instructions},
     )
     if OFFLINE:
-        model = Ollama(model="mistral", temperature=0.8)
+        model = OllamaLLM(model="mistral", temperature=0.8)
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
