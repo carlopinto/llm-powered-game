@@ -108,3 +108,20 @@ function setCurrentQuestion(targetQuestionItem) {
         targetQuestionItem.classList.add('current');
     }
 }
+
+// Function to update lifeline in UI:
+// if a lifeline has been used, 
+// a cross appears and they can't be clicked again
+function setUsedLifelines(lifelines, flags)
+{
+    for (let index = 0; index < lifelines.length; ++index) {
+        // lifeline has been used
+        if (flags[index] == 0 ) {
+            var lifelineImg = lifelines[index].querySelector('.lifeline-img');
+            var lifelineCross = lifelines[index].querySelector('.lifeline-cross');
+
+            lifelineCross.style.display = 'block';
+            lifelineImg.style.pointerEvents = 'none';
+        }
+    }
+}

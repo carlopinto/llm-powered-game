@@ -4,14 +4,22 @@
     <aside id="lifeline-sidebar" >
         <h2>Lifelines</h2>
         <ul id="lifeline-list">
-        <li class="lifeline-item">
-            <img src="static/50-50.png" alt="50-50" title="50-50" class="lifeline-img"></li>
-        <li class="lifeline-item">
-            <img src="static/flip.png" alt="Flip the Question" title="Flip the Question" class="lifeline-img"></li>
-        <li class="lifeline-item">
-            <img src="static/host.png" alt="Ask the Host" title="Ask the Host" class="lifeline-img"></li>
-        <li class="lifeline-item">
-            <img src="static/audience.png" alt="Ask the Audience" title="Ask the Audience" class="lifeline-img"></li>
+            <li class="lifeline-item">
+                <img src="static/50-50.png" alt="50-50" title="50-50" class="lifeline-img">
+                <img src="static/redcross-scaled.png" id="5050cross" class="lifeline-cross" style="display: none;">
+            </li>
+            <li class="lifeline-item">
+                <img src="static/flip.png" alt="Flip the Question" title="Flip the Question" class="lifeline-img">
+                <img src="static/redcross-scaled.png" id="flipcross" class="lifeline-cross" style="display: none;">
+            </li>
+            <li class="lifeline-item">
+                <img src="static/host.png" alt="Ask the Host" title="Ask the Host" class="lifeline-img">
+                <img src="static/redcross-scaled.png" id="hostcross" class="lifeline-cross" style="display: none;">
+            </li>
+            <li class="lifeline-item">
+                <img src="static/audience.png" alt="Ask the Audience" title="Ask the Audience" class="lifeline-img">
+                <img src="static/redcross-scaled.png" id="audiancecross" class="lifeline-cross" style="display: none;">
+            </li>
         </ul>
     </aside>
 
@@ -33,21 +41,21 @@
     <aside id="question-sidebar">
         <h2>Questions</h2>
         <ul id="question-list">
-        <li class="question-item current">Question 1</li>
-        <li class="question-item">Question 2</li>
-        <li class="question-item">Question 3</li>
-        <li class="question-item">Question 4</li>
-        <li class="question-item">Question 5</li>
-        <li class="question-item">Question 6</li>
-        <li class="question-item">Question 7</li>
-        <li class="question-item">Question 8</li>
-        <li class="question-item">Question 9</li>
-        <li class="question-item">Question 10</li>
-        <li class="question-item">Question 11</li>
-        <li class="question-item">Question 12</li>
-        <li class="question-item">Question 13</li>
-        <li class="question-item">Question 14</li>
-        <li class="question-item">Question 15</li>
+            <li class="question-item current">Question 1</li>
+            <li class="question-item">Question 2</li>
+            <li class="question-item">Question 3</li>
+            <li class="question-item">Question 4</li>
+            <li class="question-item">Question 5</li>
+            <li class="question-item">Question 6</li>
+            <li class="question-item">Question 7</li>
+            <li class="question-item">Question 8</li>
+            <li class="question-item">Question 9</li>
+            <li class="question-item">Question 10</li>
+            <li class="question-item">Question 11</li>
+            <li class="question-item">Question 12</li>
+            <li class="question-item">Question 13</li>
+            <li class="question-item">Question 14</li>
+            <li class="question-item">Question 15</li>
         </ul>
     </aside>
 
@@ -59,6 +67,8 @@
     <script>
         const questionList = document.getElementById('question-list');
         const questionItems = questionList.querySelectorAll('.question-item');
+        const lifelineList = document.getElementById('lifeline-list');
+        const lifelineItems = lifelineList.querySelectorAll('.lifeline-item');
 
         setCurrentQuestion(questionItems[Number({{current_question}}) - 1]);
 
@@ -78,21 +88,68 @@
             customConfirm("Are you sure you want to use this lifeline?", altName)
             .then((confirmed) => {
                 if (confirmed) {
-                    if ( altName == "50-50")
-                    {
-                        $.ajax({
-                            url: '/remove_options',
-                            method: 'POST',
-                            data: {
-                            },
-                            success: function (response) {
-                                document.getElementById(response.first).style.visibility = 'hidden';
-                                document.getElementById(response.second).style.visibility = 'hidden';
-                            }
-                        });
+                    switch (altName) {
+                        case '50-50':
+                            $.ajax({
+                                url: '/remove_options',
+                                method: 'POST',
+                                data: {
+                                },
+                                success: function (response) {
+                                    document.getElementById(response.first).style.visibility = 'hidden';
+                                    document.getElementById(response.second).style.visibility = 'hidden';
+
+                                    document.getElementById("5050cross").style.display = 'block';
+                                    $(this).off('click');
+                                }
+                            });
+                            break;
+                        case 'Flip the Question':
+                            $.ajax({
+                                url: '/flip_question',
+                                method: 'POST',
+                                data: {
+                                },
+                                success: function (response) {
+
+                                    document.getElementById("flipcross").style.display = 'block';
+                                    $(this).off('click');
+                                }
+                            });
+                            break;
+                        case 'Ask the Host':
+                            $.ajax({
+                                url: '/ask_host',
+                                method: 'POST',
+                                data: {
+                                },
+                                success: function (response) {
+
+                                    document.getElementById("hostcross").style.display = 'block';
+                                    $(this).off('click');
+                                }
+                            });
+                            break;
+                        case 'Ask the Audience':
+                            $.ajax({
+                                url: '/ask_audience',
+                                method: 'POST',
+                                data: {
+                                },
+                                success: function (response) {
+
+                                    document.getElementById("audiancecross").style.display = 'block';
+                                    $(this).off('click');
+                                }
+                            });
+                            break;
+                        default:
+                            break;
                     }
                 }
             });
         });
+
+        setUsedLifelines(lifelineItems, {{lifelines}});
     </script>
 {% endblock %}

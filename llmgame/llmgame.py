@@ -303,8 +303,46 @@ def remove_options():
 
     # update lifeline flag
     session['lifelines'][0] = 0
-    
+    session.modified = True
+        
     return jsonify({'first': incorrect_answers[0], 'second': incorrect_answers[1]})
+
+
+@bp.route('/flip_question', methods=['POST'])
+def flip_question():
+    """"""
+    question = ""
+    options = []
+
+    # update lifeline flag
+    session['lifelines'][1] = 0
+    session.modified = True
+    
+    return jsonify({'question': question, 'options': options})
+
+
+@bp.route('/ask_host', methods=['POST'])
+def ask_host():
+    """"""
+    hint = ""
+
+    # update lifeline flag
+    session['lifelines'][2] = 0
+    session.modified = True
+    
+    return jsonify({'hint': hint})
+
+
+@bp.route('/ask_audience', methods=['POST'])
+def ask_audience():
+    """"""
+    hint = ""
+
+    # update lifeline flag
+    session['lifelines'][3] = 0
+    session.modified = True
+    
+    return jsonify({'hint': hint})
 
 
 def remove_two_answers(options, answer):

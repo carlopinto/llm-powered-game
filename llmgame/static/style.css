@@ -219,7 +219,8 @@ header p {
 
 .question-item,
 .lifeline-item {
-   margin-bottom: 10px;
+    position: relative;
+    margin-bottom: 10px;
 }
 
 .lifeline-img {
@@ -227,6 +228,16 @@ header p {
     min-width: 150px;
     margin-top: 10px;
     cursor: pointer;
+}
+
+.lifeline-cross {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%; 
+    min-width: 150px;
+    margin-top: 10px;
+    margin-left: 8px;
 }
 
 .question-item.current {
