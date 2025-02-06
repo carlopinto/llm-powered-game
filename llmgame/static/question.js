@@ -95,6 +95,45 @@ function customConfirm(message, selectedOption) {
     });
 }
 
+function customReveal(message, answer) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('confirm-overlay');
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('confirm-dialog');
+
+    const optionText = document.createElement('p');
+    optionText.innerHTML = `The correct answer was: <b>${answer}</b>`; 
+
+    const messageText = document.createElement('p');
+    messageText.textContent = message;
+    messageText.style.textAlign = 'center';
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.classList.add('buttons-container');
+
+    const confirmButton = document.createElement('button');
+    confirmButton.textContent = "New";
+    confirmButton.classList.add('confirm-button');
+
+    buttonsContainer.appendChild(confirmButton);
+
+    dialog.appendChild(optionText);
+    dialog.appendChild(document.createElement('br'));
+    dialog.appendChild(messageText);
+    dialog.appendChild(buttonsContainer);
+    overlay.appendChild(dialog);
+
+    document.body.appendChild(overlay);
+
+    return new Promise((resolve) => {
+        confirmButton.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+            resolve(true);
+        });
+    });
+}
+
 
 // Function to update current question
 function setCurrentQuestion(targetQuestionItem) {

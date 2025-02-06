@@ -293,3 +293,12 @@ header p {
 }
 
 /*  */
+
+.llm-loading {
+    cursor: wait; /* busy cursor feedback */
+}
+
+.llm-loading * {
+    /* disable all mouse events on children elements */
+    pointer-events: none; 
+}

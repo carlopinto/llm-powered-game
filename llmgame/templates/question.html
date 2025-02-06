@@ -114,6 +114,28 @@
 
                                     document.getElementById("flipcross").style.display = 'block';
                                     $(this).off('click');
+
+                                    customReveal("Press new to switch the question", response.prevAnswer)
+                                    .then((confirmed) => {
+                                        if (confirmed) {
+                                            const section = document.getElementById('mainSection');
+                                            section.classList.add('llm-loading');
+                                            
+                                            // generate new question
+                                            const question_url = {{ url_for('llmgame.display_question')|tojson }};
+                                            fetch(question_url, {
+                                                    "method": "POST",
+                                                    "headers": {"Content-Type": "application/json"},
+                                                    "body": JSON.stringify(response.topic),
+                                                }).then((resp) => {
+                                                    console.log(resp);
+                                                }).then((html) => {
+                                                    section.classList.remove('llm-loading');
+                                                    window.location.href = "{{ url_for('llmgame.display_question') }}";
+                                                });
+                                        }
+
+                                    });
                                 }
                             });
                             break;

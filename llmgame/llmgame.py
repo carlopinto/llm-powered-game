@@ -311,14 +311,11 @@ def remove_options():
 @bp.route('/flip_question', methods=['POST'])
 def flip_question():
     """"""
-    question = ""
-    options = []
-
     # update lifeline flag
     session['lifelines'][1] = 0
     session.modified = True
     
-    return jsonify({'question': question, 'options': options})
+    return jsonify({'prevAnswer': session['answer'], 'topic': session['topic']})
 
 
 @bp.route('/ask_host', methods=['POST'])
