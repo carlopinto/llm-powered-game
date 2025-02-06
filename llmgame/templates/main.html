@@ -25,6 +25,15 @@
             // Collect all topics
             var topics = {{ topics|safe }};
 
+            // avoid accidental clicks on topics
+            // as every click is a request to the LLM
+            const topicList = document.getElementsByClassName('topic-grid')[0];
+            const topicItems = topicList.querySelectorAll('.topic-card');
+            
+            for (let index = 0; index < topicItems.length; ++index) {
+                topicItems[index].style.pointerEvents = 'none';
+            }
+
             if(selTopic=="Surprise me!"){
                 const surprise_url = {{ url_for('llmgame.display_surprise')|tojson }};
                 fetch(surprise_url, {
