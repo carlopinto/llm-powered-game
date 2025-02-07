@@ -4,4 +4,5 @@ langchain-ollama==0.2.3
 langchain-openai==0.3.3
 ollama==0.4.7
 openai==1.61.0
+pytest==8.3.4
 requests==2.32.3
