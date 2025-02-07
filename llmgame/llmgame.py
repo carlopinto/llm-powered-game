@@ -17,6 +17,9 @@ from langchain_core.exceptions import OutputParserException
 
 bp = Blueprint('llmgame', __name__)
 
+# OLLAMAURL = "http://localhost:11436"
+OLLAMAURL = "https://carlollama.victoriousflower-d746971e.uksouth.azurecontainerapps.io"
+OLLAMAMODEL = "mistral"
 OFFLINE = True
 # SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
 # inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
@@ -119,13 +122,18 @@ def display_question():
 def next_question():
     """Endpoint to show the list of topics
     for following questions"""
-    session['index'] += 1
+    if session['index'] == 15:
+        # You win!
+        # TODO replace with something great
+        return render_template('milestone.html', question=session['index'])
+    else:
+        session['index'] += 1
 
-    topics = generate_topics()        
+        topics = generate_topics()        
 
-    return render_template('main.html',
-                            name=session['name'],
-                            topics=topics)
+        return render_template('main.html',
+                                name=session['name'],
+                                topics=topics)
 
 
 def generate_topics():
@@ -151,7 +159,7 @@ def generate_topics():
         partial_variables={"format_instructions": format_instructions},
     )
     if OFFLINE:
-        model = OllamaLLM(model="mistral", temperature=0.8)
+        model = OllamaLLM(model=OLLAMAMODEL, temperature=0.8, base_url=OLLAMAURL)
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
@@ -191,7 +199,7 @@ def generate_random_topic(topics: list):
         partial_variables={"format_instructions": format_instructions},
     )
     if OFFLINE:
-        model = OllamaLLM(model="mistral", temperature=0.8)
+        model = OllamaLLM(model=OLLAMAMODEL, temperature=0.8, base_url=OLLAMAURL)
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
@@ -242,7 +250,7 @@ Make sure the answer is among the list of options. \
         partial_variables={"format_instructions": format_instructions},
     )
     if OFFLINE:
-        model = OllamaLLM(model="mistral", temperature=0.8)
+        model = OllamaLLM(model=OLLAMAMODEL, temperature=0.8, base_url=OLLAMAURL)
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
