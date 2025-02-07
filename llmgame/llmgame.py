@@ -143,7 +143,7 @@ def generate_topics():
     #     return abort(404, 'LLM server is not available.')
     
     # Ollama
-    if check_ollama_status() == 0: # pragma: no cover
+    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
         return abort(404, 'Ollama is not available.')
 
     instruction = "Generate 5 different topics for the game. Each topic can have maximum 2 words."
@@ -183,7 +183,7 @@ def generate_topics():
 def generate_random_topic(topics: list):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
-    if check_ollama_status() == 0: # pragma: no cover
+    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
         return abort(404, 'Ollama is not available.')
     # remove Random from list
     topics.pop()
@@ -220,7 +220,7 @@ def generate_random_topic(topics: list):
 
 def generate_question(topic: str):
     """Generate a question based on the given topic"""
-    if check_ollama_status() == 0: # pragma: no cover
+    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
         return abort(404, 'Ollama is not available.')
 
     instruction = "Generate one question based on the chosen topic of \"" + topic + "\""

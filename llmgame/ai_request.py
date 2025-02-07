@@ -33,10 +33,10 @@ headers = {
 }
 
 
-def check_ollama_status(): # pragma: no cover
+def check_ollama_status(url): # pragma: no cover
     """ Check status of Ollama"""   
     try:
-        response = requests.get(LOCALHOST + ":" + str(OLLAMA_PORT), timeout=10)
+        response = requests.get(url, timeout=10)
 
         if response.status_code != 200:
             return 0
