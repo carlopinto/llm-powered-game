@@ -17,9 +17,10 @@ from langchain_core.exceptions import OutputParserException
 
 bp = Blueprint('llmgame', __name__)
 
-# OLLAMAURL = "http://localhost:11436"
-OLLAMAURL = "https://carlollama.victoriousflower-d746971e.uksouth.azurecontainerapps.io"
+OLLAMAURL = "http://localhost:11434"
+# OLLAMAURL = "https://carlollama.victoriousflower-d746971e.uksouth.azurecontainerapps.io"
 OLLAMAMODEL = "mistral"
+# Flag to query different LLM. If False, it will use OpenAI API
 OFFLINE = True
 # SYS_MSG = "Act as an AI assistant that is providing content to a A LLM-powered Game \
 # inspired by 'Who wants to be a millionaire' and more specifically randomly generated questions \
@@ -90,13 +91,16 @@ def display_question():
         selected_topic = request.get_json()
         # Set up the question based on the topic
         session['topic'] = selected_topic
-        question, options, answer = generate_question(selected_topic)
-        if question is None:
-            # try one more time
-            print("Trying to generate question one more time...")
+        question = None
+        attempts = 0
+        while question is None and attempts < 3:
             question, options, answer = generate_question(selected_topic)
             if question is None:
-                # give up
+                attempts = attempts + 1
+                # try one more time
+                print("Trying to generate question one more time...")
+            if attempts == 3:
+                # give up after 3 attempts
                 print("Failed to generate question! Back to index.")
                 return redirect(url_for('llmgame.index'))
         session['question'] = question
@@ -127,13 +131,17 @@ def next_question():
         # TODO replace with something great
         return render_template('milestone.html', question=session['index'])
     else:
-        session['index'] += 1
+        if not session['end']:
+            session['index'] += 1
 
-        topics = generate_topics()        
+            topics = generate_topics()        
 
-        return render_template('main.html',
-                                name=session['name'],
-                                topics=topics)
+            return render_template('main.html',
+                                    name=session['name'],
+                                    topics=topics)
+        else:
+            # show game over message
+            return redirect(url_for('llmgame.game_over')) 
 
 
 def generate_topics():
