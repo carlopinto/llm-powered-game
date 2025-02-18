@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="container">
+        <h1>Error</h1>
+        <p>{{errorMessage}}</p>
+
+        <button id="tryButton">Start Over</button>
+    </div>
+    <script>
+        $('#tryButton').click(function() {
+            window.location.href="{{ url_for( 'llmgame.index' ) }}";
+        });
+    </script>
+{% endblock %}
