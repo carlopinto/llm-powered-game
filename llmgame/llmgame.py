@@ -2,8 +2,7 @@
 import json
 import random
 from flask import (
-    Blueprint, render_template, request, jsonify, session, redirect, url_for)
-from werkzeug.exceptions import abort
+    Blueprint, render_template, request, jsonify, session, redirect, Response, url_for)
 
 from llmgame.ai_request import (
     #check_llm_server_status, single_query_llm, 
@@ -120,8 +119,9 @@ def display_question():
                 print("Trying to generate question one more time...")
             if attempts == 3:
                 # give up after 3 attempts
-                print("Failed to generate question! Back to index.")
-                return redirect(url_for('llmgame.index'))
+                print("Failed to generate question!")
+                return render_template('error.html', 
+                                       errorMessage="Failed to generate a question!")
         session['question'] = question
         session['answer'] = answer
         session['options'] = options
@@ -129,8 +129,8 @@ def display_question():
 
     if not session['end']:
         if session['question'] is None:
-            # something went wrong
-            return abort(404, "Something went wrong generating the question.")
+            return render_template('error.html', 
+                                   errorMessage="Something went wrong!")
         return render_template('question.html', 
                             question=session['question'], 
                             options=session['options'],
@@ -150,28 +150,39 @@ def next_question():
         # TODO replace with something great
         return render_template('milestone.html', question=session['index'])
     else:
-        if not session['end']:
-            session['index'] += 1
+        if request.method == 'POST':
+            # check if a wrong answer has been submitted AND
+            # make sure the question index is equal to the number of answers given
+            if not session['end'] and session['index'] == len(session['answers']):
+                session['index'] += 1
 
-            topics = generate_topics()        
-
-            return render_template('main.html',
-                                    name=session['name'],
-                                    topics=topics)
+                topics = generate_topics()
+                session['topics'] = topics
+                return topics   
+            else:
+                # show game over message
+                return Response(
+                    json.dumps("error"),
+                    status=400,
+                )     
         else:
-            # show game over message
-            return redirect(url_for('llmgame.game_over')) 
+            # make sure topics have been genereted in POST request above and stored in session
+            if not session['topics']:
+                # show game over message
+                return redirect(url_for('llmgame.game_over'))
+            else:
+                return render_template('main.html',
+                                    name=session['name'],
+                                    topics=session['topics'])
+            
 
 
 def generate_topics():
-    """Generate a list of 5 topics (plus Random)"""
-    # LM Studio
-    # if check_llm_server_status() == 0: # pragma: no cover
-    #     return abort(404, 'LLM server is not available.')
-    
+    """Generate a list of 5 topics (plus Random)"""   
     # Ollama
     if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
-        return abort(404, 'Ollama is not available.')
+        return render_template('error.html', 
+                                errorMessage="AI model is offline! Try again later.")
 
     instruction = "Generate 5 different topics for the game. Each topic can have maximum 2 words."
     
@@ -211,7 +222,8 @@ def generate_random_topic(topics: list):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
     if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
-        return abort(404, 'Ollama is not available.')
+        return render_template('error.html', 
+                                errorMessage="AI model is offline! Try again later.")
     # remove Random from list
     topics.pop()
     instruction = "Generate one random topic for the game that has to be different from all these topics:\n" + '\n'.join(topics)
@@ -248,7 +260,8 @@ def generate_random_topic(topics: list):
 def generate_question(topic: str):
     """Generate a question based on the given topic"""
     if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
-        return abort(404, 'Ollama is not available.')
+        return render_template('error.html', 
+                                errorMessage="AI model is offline! Try again later.")
 
     instruction = "Generate one question based on the chosen topic of \"" + topic + "\""
     response_schemas = [

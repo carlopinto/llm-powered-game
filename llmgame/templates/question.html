@@ -72,10 +72,30 @@
 
         setCurrentQuestion(questionItems[Number({{current_question}}) - 1]);
 
-        $('#next-button').click(function() {
-            document.getElementById('loader').style.display = 'block';
+        document.getElementById('next-button').addEventListener('click', function(event) {
+            // Disable the button immediately and update its text
+            const submitButton = document.getElementById('next-button');
+            submitButton.disabled = true;
+            submitButton.innerHTML = "...";
+            submitButton.style.pointerEvents = 'none';
 
-            window.location.href="{{ url_for( 'llmgame.next_question' ) }}";
+            const topics_url = {{ url_for('llmgame.next_question')|tojson }};
+            fetch(topics_url, {
+                    "method": "POST",
+                    "headers": {"Content-Type": "application/json"},
+                    "body": JSON.stringify("next"),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data == "error") {
+                        // Handle error (e.g., user tried to cheat)
+                        // alert(data);
+                        // ... redirect or reset ...
+                        window.location.href = "{{ url_for('llmgame.game_over') }}";
+                    } else {
+                        window.location.href = "{{ url_for('llmgame.next_question') }}";
+                    }
+                });
         });
 
         $('#quit-button').click(function() {
