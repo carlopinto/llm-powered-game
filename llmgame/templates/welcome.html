@@ -4,18 +4,23 @@
     <div class="container" id="welcomePage"> 
         <h1>Welcome, Challenger!</h1>
         <p>Enter your name to embark on this quizzing quest:</p>
-        <form method="post">
+        <form id="myForm" method="post">
             <input type="text" id="name" name="name" placeholder="Your Name" value="{{ request.form['name'] }}">
             <button id="continueButton">Continue</button>
         </form>
     </div>
 
     <script>
-         $("#continueButton").click(function() {
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            // show loader
             document.getElementById('loader').style.display = 'block';
+
+            // Disable the button immediately and update its text
+            const submitButton = document.getElementById('continueButton');
+            submitButton.disabled = true;
+            submitButton.innerHTML = "Generating...";
         });
 
-        // Future code to handle clicking 'continueButton' 
     </script>
 {% endblock %}
 

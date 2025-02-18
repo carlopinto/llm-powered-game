@@ -36,6 +36,7 @@ def index():
 @bp.route('/game_over')
 def game_over():
     """Endpoint to show the last message to users"""
+    init_session_variables()
     if not session['end']:
         return render_template('milestone.html', question=session['index'])
     return render_template('gameover.html')
@@ -50,17 +51,9 @@ def welcome():
 
         if not name:
             name = 'Player'
-            
+
+        init_session_variables()
         session['name'] = name
-        session['index'] = 1
-        session['end'] = False
-        session['topic'] = None
-        session['question'] = None
-        session['answer'] = None
-        session['options'] = []
-        # lifelines can be used only once
-        # value will change to 0 when used
-        session['lifelines'] = [1, 1, 1, 1]
         
         topics = generate_topics()        
 
@@ -71,17 +64,43 @@ def welcome():
     return render_template('welcome.html')
 
 
+def init_session_variables():
+    """Init/Reset session variables"""
+    # Name of the player
+    session['name'] = None
+    # Question index
+    session['index'] = 1
+    # Flag set to True when wrong answer is given
+    session['end'] = False
+    # Topic chosen by player
+    session['selectedtopic'] = None
+    # Topics shown to the player
+    session['topics'] = []
+    # Question for the player based on selected topic
+    session['question'] = None
+    # Correct answer to the question
+    session['answer'] = None
+    # List of options / possible answers
+    session['options'] = []
+    # List of answers given by the player
+    session['answers'] = []
+    # Flags to indicate whether lifelines have been used
+    # lifelines can be used only once
+    # value will change to 0 when used
+    session['lifelines'] = [1, 1, 1, 1]
+
+
 @bp.route('/surprise', methods=('GET', 'POST'))
 def display_surprise():
     """Endpoint to show the random topic"""
     if request.method == 'POST':
         topics = request.get_json()
         topic = generate_random_topic(topics)
-        session['topic'] = topic
+        session['selectedtopic'] = topic
         return topic
 
     return render_template('surprise.html', 
-                           topic=session['topic']) 
+                           topic=session['selectedtopic']) 
 
 
 @bp.route('/question', methods=('GET', 'POST'))
@@ -90,7 +109,7 @@ def display_question():
     if request.method == 'POST':
         selected_topic = request.get_json()
         # Set up the question based on the topic
-        session['topic'] = selected_topic
+        session['selectedtopic'] = selected_topic
         question = None
         attempts = 0
         while question is None and attempts < 3:
@@ -300,6 +319,8 @@ def check_answer():
     """"""
     selected_option = request.form['selected_option']
 
+    session['answers'].append(selected_option)
+
     if selected_option == session['answer']:
         feedback = "Correct answer!"
         # set to None to prevent the following question
@@ -331,7 +352,7 @@ def flip_question():
     session['lifelines'][1] = 0
     session.modified = True
     
-    return jsonify({'prevAnswer': session['answer'], 'topic': session['topic']})
+    return jsonify({'prevAnswer': session['answer'], 'topic': session['selectedtopic']})
 
 
 @bp.route('/ask_host', methods=['POST'])
