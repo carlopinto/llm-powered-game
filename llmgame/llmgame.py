@@ -109,6 +109,8 @@ def display_question():
         selected_topic = request.get_json()
         # Set up the question based on the topic
         session['selectedtopic'] = selected_topic
+        # empty list to prevent unapproved behaviours
+        session['topics'] = []
         question = None
         attempts = 0
         while question is None and attempts < 3:
@@ -127,18 +129,14 @@ def display_question():
         session['options'] = options
         return question
 
-    if not session['end']:
-        if session['question'] is None:
-            return render_template('error.html', 
-                                   errorMessage="Something went wrong!")
-        return render_template('question.html', 
-                            question=session['question'], 
-                            options=session['options'],
-                            current_question=session['index'],
-                            lifelines=session['lifelines'])
-    else:
-        # show game over message
-        return redirect(url_for('llmgame.game_over')) 
+    if session['question'] is None:
+        return render_template('error.html', 
+                                errorMessage="Something went wrong!")
+    return render_template('question.html', 
+                        question=session['question'], 
+                        options=session['options'],
+                        current_question=session['index'],
+                        lifelines=session['lifelines'])
 
 
 @bp.route('/topics', methods=('GET', 'POST'))
@@ -168,8 +166,10 @@ def next_question():
         else:
             # make sure topics have been genereted in POST request above and stored in session
             if not session['topics']:
-                # show game over message
-                return redirect(url_for('llmgame.game_over'))
+                session['end'] = True
+                session['question'] = None
+                return render_template('error.html', 
+                                errorMessage="That's not how you are supposed to play the game! Try again.")
             else:
                 return render_template('main.html',
                                     name=session['name'],

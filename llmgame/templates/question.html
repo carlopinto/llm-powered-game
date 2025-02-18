@@ -73,6 +73,9 @@
         setCurrentQuestion(questionItems[Number({{current_question}}) - 1]);
 
         document.getElementById('next-button').addEventListener('click', function(event) {
+            // show loader
+            document.getElementById('loader').style.display = 'block';
+
             // Disable the button immediately and update its text
             const submitButton = document.getElementById('next-button');
             submitButton.disabled = true;
@@ -89,9 +92,11 @@
                 .then(data => {
                     if (data == "error") {
                         // Handle error (e.g., user tried to cheat)
-                        // alert(data);
                         // ... redirect or reset ...
-                        window.location.href = "{{ url_for('llmgame.game_over') }}";
+
+                        // since question in the session object has been cleared
+                        // the GET request to /question will show the error page
+                        window.location.href = "{{ url_for('llmgame.display_question') }}";
                     } else {
                         window.location.href = "{{ url_for('llmgame.next_question') }}";
                     }
