@@ -16,8 +16,8 @@ from langchain_core.exceptions import OutputParserException
 
 bp = Blueprint('llmgame', __name__)
 
-OLLAMAURL = "http://localhost:11434"
-# OLLAMAURL = "https://carlollama.victoriousflower-d746971e.uksouth.azurecontainerapps.io"
+# OLLAMAURL = "http://localhost:11434"
+OLLAMAURL = "https://carlollama.victoriousflower-d746971e.uksouth.azurecontainerapps.io"
 OLLAMAMODEL = "mistral"
 # Flag to query different LLM. If False, it will use OpenAI API
 OFFLINE = True
