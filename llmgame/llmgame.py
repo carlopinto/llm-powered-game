@@ -53,7 +53,11 @@ def welcome():
         init_session_variables()
         session['name'] = name
         # generate new topics and store them in session object
-        session['topics'] = generate_topics()  
+        session['topics'] = generate_topics()
+        if session['topics'] is None:
+            # TODO
+            return render_template('error.html', 
+                                errorMessage="AI model is offline! Try again later.")
 
         return render_template('main.html',
                                name=session['name'],
@@ -94,6 +98,10 @@ def display_surprise():
     if request.method == 'POST':
         topics = request.get_json()
         topic = generate_random_topic(topics)
+        if topic is None:
+            # TODO
+            return render_template('error.html', 
+                                errorMessage="AI model is offline! Try again later.")
         session['selectedtopic'] = topic
         return topic
 
@@ -129,6 +137,7 @@ def display_question():
             if attempts == 3:
                 # give up after 3 attempts
                 print("Failed to generate question!")
+                # TODO 
                 return render_template('error.html', 
                                        errorMessage="Failed to generate a question!")
         session['question'] = question
@@ -188,8 +197,7 @@ def generate_topics():
     """Generate a list of 5 topics (plus Random)"""   
     # Ollama
     if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
-        return render_template('error.html', 
-                                errorMessage="AI model is offline! Try again later.")
+        return None
 
     instruction = "Generate 5 different topics for the game. Each topic can have maximum 2 words."
     
@@ -229,8 +237,8 @@ def generate_random_topic(topics: list):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
     if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
-        return render_template('error.html', 
-                                errorMessage="AI model is offline! Try again later.")
+        return None
+    
     # remove Random from list
     topics.pop()
     instruction = "Generate one random topic for the game that has to be different from all these topics:\n" + '\n'.join(topics)
@@ -267,8 +275,7 @@ def generate_random_topic(topics: list):
 def generate_question(topic: str):
     """Generate a question based on the given topic"""
     if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
-        return render_template('error.html', 
-                                errorMessage="AI model is offline! Try again later.")
+        return None, None, None
 
     instruction = "Generate one question based on the chosen topic of \"" + topic + "\""
     response_schemas = [
