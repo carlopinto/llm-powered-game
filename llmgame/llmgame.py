@@ -47,19 +47,17 @@ def welcome():
     for the first question"""
     if request.method == 'POST':
         name = request.form['name']
-
+        # set default name if none is given
         if not name:
             name = 'Player'
-
         init_session_variables()
         session['name'] = name
-        
-        topics = generate_topics()
-        session['topics'] = topics     
+        # generate new topics and store them in session object
+        session['topics'] = generate_topics()  
 
         return render_template('main.html',
-                               name=name,
-                               topics=topics)
+                               name=session['name'],
+                               topics=session['topics'])
     
     return render_template('welcome.html')
 
@@ -161,11 +159,11 @@ def next_question():
             # check if a wrong answer has been submitted AND
             # make sure the question index is equal to the number of answers given
             if not session['end'] and session['index'] == len(session['answers']):
+                # progress to next question
                 session['index'] += 1
-
-                topics = generate_topics()
-                session['topics'] = topics
-                return topics   
+                # generate new topics and store them in session object
+                session['topics'] = generate_topics()
+                return session['topics']   
             else:
                 # show game over message
                 return Response(
