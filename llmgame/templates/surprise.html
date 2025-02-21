@@ -10,8 +10,15 @@
     </div>
 
     <script>
-        $('#continueButton').click(function() {
+        document.getElementById('continueButton').addEventListener('click', function(event) {
+            // show loader
             document.getElementById('loader').style.display = 'block';
+
+            // Disable the button immediately and update its text
+            const submitButton = document.getElementById('continueButton');
+            submitButton.disabled = true;
+            submitButton.innerHTML = "Generating...";
+            submitButton.style.pointerEvents = 'none';
             
             let selTopic = "{{topic|safe}}";
             console.log(selTopic);

@@ -72,10 +72,35 @@
 
         setCurrentQuestion(questionItems[Number({{current_question}}) - 1]);
 
-        $('#next-button').click(function() {
+        document.getElementById('next-button').addEventListener('click', function(event) {
+            // show loader
             document.getElementById('loader').style.display = 'block';
 
-            window.location.href="{{ url_for( 'llmgame.next_question' ) }}";
+            // Disable the button immediately and update its text
+            const submitButton = document.getElementById('next-button');
+            submitButton.disabled = true;
+            submitButton.innerHTML = "...";
+            submitButton.style.pointerEvents = 'none';
+
+            const topics_url = {{ url_for('llmgame.next_question')|tojson }};
+            fetch(topics_url, {
+                    "method": "POST",
+                    "headers": {"Content-Type": "application/json"},
+                    "body": JSON.stringify("next"),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data == "error") {
+                        // Handle error (e.g., user tried to cheat)
+                        // ... redirect or reset ...
+
+                        // since question in the session object has been cleared
+                        // the GET request to /question will show the error page
+                        window.location.href = "{{ url_for('llmgame.display_question') }}";
+                    } else {
+                        window.location.href = "{{ url_for('llmgame.next_question') }}";
+                    }
+                });
         });
 
         $('#quit-button').click(function() {
