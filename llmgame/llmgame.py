@@ -54,7 +54,8 @@ def welcome():
         init_session_variables()
         session['name'] = name
         
-        topics = generate_topics()        
+        topics = generate_topics()
+        session['topics'] = topics     
 
         return render_template('main.html',
                                name=name,
@@ -98,7 +99,15 @@ def display_surprise():
         session['selectedtopic'] = topic
         return topic
 
-    return render_template('surprise.html', 
+    # make sure topics have been genereted in POST request and
+    # the player has not seen the question already
+    if not session['topics']:
+        session['end'] = True
+        session['question'] = None
+        return render_template('error.html', 
+                        errorMessage="That's not how you are supposed to play the game! Try again.")
+    else:
+        return render_template('surprise.html', 
                            topic=session['selectedtopic']) 
 
 
@@ -129,7 +138,7 @@ def display_question():
         session['options'] = options
         return question
 
-    if session['question'] is None:
+    if session['question'] is None or session['end']:
         return render_template('error.html', 
                                 errorMessage="Something went wrong!")
     return render_template('question.html', 
