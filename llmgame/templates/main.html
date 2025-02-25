@@ -40,10 +40,13 @@
                         "method": "POST",
                         "headers": {"Content-Type": "application/json"},
                         "body": JSON.stringify(topics),
-                    }).then((response) => {
-                        console.log(response);
-                    }).then((html) => {
-                        window.location.href = "{{ url_for('llmgame.display_surprise') }}";
+                    }).then(response => response.json())
+                    .then((data) => {
+                        if(data.status == 200)
+                            window.location.href = "{{ url_for('llmgame.display_surprise') }}";
+                        else {
+                            window.location.assign("/error/" + data.data);
+                        }
                     });
             }
             else {
@@ -52,10 +55,13 @@
                         "method": "POST",
                         "headers": {"Content-Type": "application/json"},
                         "body": JSON.stringify(selTopic),
-                    }).then((response) => {
-                        console.log(response);
-                    }).then((html) => {
-                        window.location.href = "{{ url_for('llmgame.display_question') }}";
+                    }).then(response => response.json())
+                    .then((data) => {
+                        if(data.status == 200)
+                            window.location.href = "{{ url_for('llmgame.display_question') }}";
+                        else {
+                            window.location.assign("/error/" + data.data);
+                        }
                     });
             }
         });
