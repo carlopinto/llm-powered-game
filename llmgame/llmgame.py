@@ -32,6 +32,13 @@ def index():
     return render_template('index.html')
 
 
+@bp.route('/error/<msg>')
+def error(msg="error"):
+    """Error endpoint"""
+    return render_template('error.html',
+                           errorMessage=msg)
+
+
 @bp.route('/game_over')
 def game_over():
     """Endpoint to show the last message to users"""
@@ -55,7 +62,6 @@ def welcome():
         # generate new topics and store them in session object
         session['topics'] = generate_topics()
         if session['topics'] is None:
-            # TODO
             return render_template('error.html', 
                                 errorMessage="AI model is offline! Try again later.")
 
@@ -99,11 +105,15 @@ def display_surprise():
         topics = request.get_json()
         topic = generate_random_topic(topics)
         if topic is None:
-            # TODO
-            return render_template('error.html', 
-                                errorMessage="AI model is offline! Try again later.")
+            return {
+                "status": 500,
+                "data": "AI model is offline! Try again later."
+            }
         session['selectedtopic'] = topic
-        return topic
+        return {
+            "status": 200,
+            "data": topic
+        }
 
     # make sure topics have been genereted in POST request and
     # the player has not seen the question already
@@ -137,13 +147,17 @@ def display_question():
             if attempts == 3:
                 # give up after 3 attempts
                 print("Failed to generate question!")
-                # TODO 
-                return render_template('error.html', 
-                                       errorMessage="Failed to generate a question!")
+                return {
+                    "status": 500,
+                    "data": "Failed to generate a question! Try again later."
+                }
         session['question'] = question
         session['answer'] = answer
         session['options'] = options
-        return question
+        return {
+            "status": 200,
+            "data": question
+        }
 
     if session['question'] is None or session['end']:
         return render_template('error.html', 
@@ -172,13 +186,21 @@ def next_question():
                 session['index'] += 1
                 # generate new topics and store them in session object
                 session['topics'] = generate_topics()
-                return session['topics']   
+                if session['topics'] is None:
+                    return {
+                        "status": 500,
+                        "data": "AI model is offline! Try again later."
+                    }
+                return {
+                    "status": 200,
+                    "data": session['topics']
+                }  
             else:
                 # show game over message
-                return Response(
-                    json.dumps("error"),
-                    status=400,
-                )     
+                return {
+                    "status": 400,
+                    "data": "error"
+                }     
         else:
             # make sure topics have been genereted in POST request above and stored in session
             if not session['topics']:

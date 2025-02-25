@@ -90,15 +90,19 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data == "error") {
-                        // Handle error (e.g., user tried to cheat)
-                        // ... redirect or reset ...
-
-                        // since question in the session object has been cleared
-                        // the GET request to /question will show the error page
-                        window.location.href = "{{ url_for('llmgame.display_question') }}";
-                    } else {
+                    if(data.status == 200)
                         window.location.href = "{{ url_for('llmgame.next_question') }}";
+                    else {
+                        if(data.status == 400){
+                            // Handle error (e.g., user tried to cheat)
+                            // ... redirect or reset ...
+
+                            // since question in the session object has been cleared
+                            // the GET request to /question will show the error page
+                            window.location.href = "{{ url_for('llmgame.display_question') }}";
+                        } else{ 
+                            window.location.assign("/error/" + data.data);
+                        }
                     }
                 });
         });
