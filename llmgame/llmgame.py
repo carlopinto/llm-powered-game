@@ -217,7 +217,12 @@ def generate_topics():
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
     
-    llm_response = chain.invoke({"instruction": instruction})
+    try:
+        llm_response = chain.invoke({"instruction": instruction})        
+    except Exception as e:
+        print(e)
+        return None
+        
     if llm_response != "" and llm_response is not None:
         print (llm_response)
         if "topics" in llm_response:
@@ -257,8 +262,13 @@ def generate_random_topic(topics: list):
     else:
         model = ChatOpenAI(model="gpt-4", temperature=0.8)
     chain = prompt | model | output_parser
-    
-    llm_response = chain.invoke({"instruction": instruction})
+
+    try:
+        llm_response = chain.invoke({"instruction": instruction})        
+    except Exception as e:
+        print(e)
+        return None
+
     if llm_response != "" and llm_response is not None:
         print(llm_response)
         if "topic" in llm_response:
@@ -338,7 +348,10 @@ Make sure the answer is among the list of options. \
         return None, None, None
     except OutputParserException:
         print("Failed to generate a question - (parsing LLM response)")
-        return None, None, None
+        return None, None, None       
+    except Exception as e:
+        print(e)
+        return None, None, None 
     
 
 @bp.route('/check_answer', methods=['POST'])
