@@ -45,7 +45,7 @@ def welcome():
             return render_template('error.html', 
                                 errorMessage="AI model is offline! Try again later.")
 
-        return render_template('main.html',
+        return render_template('topics.html',
                                name=session['name'],
                                topics=session['topics'])
     
@@ -189,7 +189,7 @@ def next_question():
                 return render_template('error.html', 
                                 errorMessage="That's not how you are supposed to play the game! Try again.")
             else:
-                return render_template('main.html',
+                return render_template('topics.html',
                                     name=session['name'],
                                     topics=session['topics'])
 
