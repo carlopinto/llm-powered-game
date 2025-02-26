@@ -174,7 +174,7 @@ def next_question():
     if session['index'] == 15:
         # You win!
         # TODO replace with something great
-        return render_template('milestone.html', question=session['index'])
+        return render_template('winner.html', question=session['index'])
     else:
         if request.method == 'POST':
             # check if a wrong answer has been submitted AND
