@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 from . import db
+from . import lifelines
 from . import llmgame
 
 
@@ -42,6 +43,7 @@ def create_app(test_config=None):
 
     # apply the blueprints to the app
     app.register_blueprint(llmgame.bp)
+    app.register_blueprint(lifelines.bp)
     app.add_url_rule('/', endpoint='index')
 
     return app

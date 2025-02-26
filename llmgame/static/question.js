@@ -27,6 +27,7 @@ $('.option-card').click(function () {
                             document.getElementById(selOption).style.backgroundColor = "#f06868";
                         }
 
+                        // Disable options
                         const optionCards = document.querySelectorAll('.option-card');
                         optionCards.forEach(otherCard => {
                             // Disable jQuery click events
@@ -39,6 +40,18 @@ $('.option-card').click(function () {
                             otherCard.style.pointerEvents = 'none';
                         });
 
+                        // Disable lifelines
+                        const lifelines = document.querySelectorAll('.lifeline-item');
+                        lifelines.forEach(otherLifeline => {
+                            // Disable jQuery click events
+                            $(otherLifeline).off('click');
+                            if (otherLifeline !== this) {
+                                otherLifeline.disabled = true;
+                                otherLifeline.classList.add('disabled');
+                            }
+                            // Prevent hover effect
+                            otherLifeline.style.pointerEvents = 'none';
+                        });
                     }
                 });
             }
@@ -125,6 +138,75 @@ function customReveal(message, answer) {
     overlay.appendChild(dialog);
 
     document.body.appendChild(overlay);
+
+    return new Promise((resolve) => {
+        confirmButton.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+            resolve(true);
+        });
+    });
+}
+
+function customAskHost() {
+    const overlay = document.createElement('div');
+    overlay.classList.add('confirm-overlay');
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('confirm-dialog');
+    dialog.style.textAlign = 'center';
+    dialog.style.maxWidth = '40%'
+
+    const optionText = document.createElement('p');
+    optionText.innerHTML = `You have asked the host...`; 
+
+    const messageText = document.createElement('p');
+    messageText.id = 'message-text';
+    messageText.textContent = "";
+    messageText.style.fontWeight = 'bold';
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.classList.add('buttons-container');
+    buttonsContainer.style.justifyContent = 'center';
+
+    const loader = document.createElement('div');
+    loader.id = 'loader-dialog';
+    loader.classList.add('loader');
+
+    const confirmButton = document.createElement('button');
+    confirmButton.id = 'ok-button';
+    confirmButton.textContent = "OK";
+    confirmButton.classList.add('confirm-button');
+    confirmButton.style.display = 'none';
+
+    buttonsContainer.appendChild(confirmButton);
+
+    dialog.appendChild(optionText);
+    dialog.appendChild(document.createElement('br'));
+    dialog.appendChild(messageText);
+    dialog.appendChild(loader);
+    dialog.appendChild(buttonsContainer);
+    overlay.appendChild(dialog);
+
+    document.body.appendChild(overlay);
+
+    // show loader
+    loader.style.display = 'block';
+    $.ajax({
+        url: '/lifeline/ask_host',
+        method: 'POST',
+        data: {
+        },
+        success: function (response) {
+            // Hide loader
+            document.getElementById('loader-dialog').style.display = 'none';
+
+            // Show message
+            document.getElementById('message-text').textContent = response.hint;
+
+            // show OK button
+            document.getElementById('ok-button').style.display = 'block';
+        }
+    });
 
     return new Promise((resolve) => {
         confirmButton.addEventListener('click', () => {

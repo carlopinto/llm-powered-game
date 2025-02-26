@@ -120,7 +120,7 @@
                     switch (altName) {
                         case '50-50':
                             $.ajax({
-                                url: '/remove_options',
+                                url: '/lifeline/remove_options',
                                 method: 'POST',
                                 data: {
                                 },
@@ -135,7 +135,7 @@
                             break;
                         case 'Flip the Question':
                             $.ajax({
-                                url: '/flip_question',
+                                url: '/lifeline/flip_question',
                                 method: 'POST',
                                 data: {
                                 },
@@ -169,13 +169,9 @@
                             });
                             break;
                         case 'Ask the Host':
-                            $.ajax({
-                                url: '/ask_host',
-                                method: 'POST',
-                                data: {
-                                },
-                                success: function (response) {
-
+                            customAskHost()
+                            .then((confirmed) => {
+                                if (confirmed) {
                                     document.getElementById("hostcross").style.display = 'block';
                                     $(this).off('click');
                                 }
@@ -183,7 +179,7 @@
                             break;
                         case 'Ask the Audience':
                             $.ajax({
-                                url: '/ask_audience',
+                                url: '/lifeline/ask_audience',
                                 method: 'POST',
                                 data: {
                                 },
