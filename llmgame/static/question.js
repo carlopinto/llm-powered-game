@@ -27,6 +27,7 @@ $('.option-card').click(function () {
                             document.getElementById(selOption).style.backgroundColor = "#f06868";
                         }
 
+                        // Disable options
                         const optionCards = document.querySelectorAll('.option-card');
                         optionCards.forEach(otherCard => {
                             // Disable jQuery click events
@@ -39,6 +40,18 @@ $('.option-card').click(function () {
                             otherCard.style.pointerEvents = 'none';
                         });
 
+                        // Disable lifelines
+                        const lifelines = document.querySelectorAll('.lifeline-item');
+                        lifelines.forEach(otherLifeline => {
+                            // Disable jQuery click events
+                            $(otherLifeline).off('click');
+                            if (otherLifeline !== this) {
+                                otherLifeline.disabled = true;
+                                otherLifeline.classList.add('disabled');
+                            }
+                            // Prevent hover effect
+                            otherLifeline.style.pointerEvents = 'none';
+                        });
                     }
                 });
             }
