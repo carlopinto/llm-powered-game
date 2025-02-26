@@ -1,9 +1,9 @@
 import random
-from llmgame.ai_request import (
-    check_ollama_status, OllamaLLM)
+import requests
 
 from flask import session
 
+from langchain_ollama import OllamaLLM
 from langchain_openai import ChatOpenAI
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts import PromptTemplate
@@ -18,10 +18,22 @@ OFFLINE = True
 RANDOM_LABEL = "Surprise me!"
 
 
+def check_llm_status(url): # pragma: no cover
+    """ Check status of LLM"""   
+    try:
+        response = requests.get(url, timeout=10)
+
+        if response.status_code != 200:
+            return 0
+        return 1
+    except requests.exceptions.RequestException:
+        return 0
+    
+
 def generate_topics():
     """Generate a list of 5 topics (plus Random)"""   
     # Ollama
-    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
+    if check_llm_status(OLLAMAURL) == 0: # pragma: no cover
         return None
 
     instruction = "Generate 5 different topics for the game. Each topic can have maximum 2 words."
@@ -66,7 +78,7 @@ def generate_topics():
 def generate_random_topic(topics: list):
     """Generate the 6th topic which can be 
     anything but the 5 topics already generated"""
-    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
+    if check_llm_status(OLLAMAURL) == 0: # pragma: no cover
         return None
     
     # remove Random from list
@@ -109,7 +121,7 @@ def generate_random_topic(topics: list):
 
 def generate_question(topic: str):
     """Generate a question based on the given topic"""
-    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
+    if check_llm_status(OLLAMAURL) == 0: # pragma: no cover
         return None, None, None
 
     instruction = "Generate one question based on the chosen topic of \"" + topic + "\""
@@ -184,9 +196,8 @@ def generate_host_hint(question: str, options: list, answer: str):
     question, options and correct answer.
     It returns the answer the host thinks is right,
     but it is not always correct."""
-    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
+    if check_llm_status(OLLAMAURL) == 0: # pragma: no cover
         return None
-    
     
     instruction = "Given the following question: '" + question + "', its correct answer: '" + answer + "' \
 and the list of options: '" + ','.join(options) + "', generate a hint from someone who may know the correct answer. \
