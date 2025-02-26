@@ -2,7 +2,7 @@
 from flask import (
     Blueprint, render_template, request, jsonify, session)
 
-from llm_generation import *
+from llmgame.llm_generation import *
 
 bp = Blueprint('llmgame', __name__)
 

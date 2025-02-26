@@ -1,4 +1,4 @@
-from ai_request import (
+from llmgame.ai_request import (
     check_ollama_status, OllamaLLM)
 
 from flask import session
