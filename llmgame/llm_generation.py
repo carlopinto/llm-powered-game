@@ -1,3 +1,4 @@
+import random
 from llmgame.ai_request import (
     check_ollama_status, OllamaLLM)
 
@@ -176,3 +177,51 @@ Make sure the answer is among the list of options. \
     except Exception as e:
         print(e)
         return None, None, None 
+
+
+def generate_host_hint(question: str, options: list, answer: str):
+    """Generate a hint from the host given
+    question, options and correct answer.
+    It returns the answer the host thinks is right,
+    but it is not always correct."""
+    if check_ollama_status(OLLAMAURL) == 0: # pragma: no cover
+        return None
+    
+    
+    instruction = "Given the following question: '" + question + "', its correct answer: '" + answer + "' \
+and the list of options: '" + ','.join(options) + "', generate a hint from someone who may know the correct answer. \
+Make sure to include one of the options at the end of the sentence. For example:\
+\nThe correct answer may be '" + random.choice(options) + "'"
+    response_schemas = [
+        ResponseSchema(name="hint", description="string of the answer the host thinks is right")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    format_instructions = output_parser.get_format_instructions()
+    prompt = PromptTemplate(
+        template="Follow the user's instruction and make sure you are inspired by 'Who wants to be a millionaire'.\n{format_instructions}\n{instruction}",
+        input_variables=["instruction"],
+        partial_variables={"format_instructions": format_instructions},
+    )
+    if OFFLINE:
+        model = OllamaLLM(model=OLLAMAMODEL, temperature=0.8, base_url=OLLAMAURL)
+    else:
+        model = ChatOpenAI(model="gpt-4", temperature=0.8)
+    chain = prompt | model | output_parser
+
+    try:
+        llm_response = chain.invoke({"instruction": instruction})        
+    except Exception as e:
+        print(e)
+        return None
+
+    if llm_response != "" and llm_response is not None:
+        print(llm_response)
+        if "hint" in llm_response:
+            # extract str from dict
+            hint = llm_response['hint']
+            return hint
+
+    random_hint = random.choice(options)
+    random_hint = "I am not sure... The correct answer might be " + random_hint
+    return random_hint
+

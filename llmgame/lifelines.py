@@ -2,6 +2,8 @@ import random
 from flask import (
     Blueprint, jsonify, session)
 
+from llmgame.llm_generation import generate_host_hint
+
 
 bp = Blueprint('lifelines', __name__, url_prefix='/lifeline')
 
@@ -31,7 +33,7 @@ def flip_question():
 @bp.route('/ask_host', methods=['POST'])
 def ask_host():
     """"""
-    hint = ""
+    hint = generate_host_hint(session['question'], session['options'], session['answer'])
 
     # update lifeline flag
     session['lifelines'][2] = 0

@@ -147,6 +147,75 @@ function customReveal(message, answer) {
     });
 }
 
+function customAskHost() {
+    const overlay = document.createElement('div');
+    overlay.classList.add('confirm-overlay');
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('confirm-dialog');
+    dialog.style.textAlign = 'center';
+    dialog.style.maxWidth = '40%'
+
+    const optionText = document.createElement('p');
+    optionText.innerHTML = `You have asked the host...`; 
+
+    const messageText = document.createElement('p');
+    messageText.id = 'message-text';
+    messageText.textContent = "";
+    messageText.style.fontWeight = 'bold';
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.classList.add('buttons-container');
+    buttonsContainer.style.justifyContent = 'center';
+
+    const loader = document.createElement('div');
+    loader.id = 'loader-dialog';
+    loader.classList.add('loader');
+
+    const confirmButton = document.createElement('button');
+    confirmButton.id = 'ok-button';
+    confirmButton.textContent = "OK";
+    confirmButton.classList.add('confirm-button');
+    confirmButton.style.display = 'none';
+
+    buttonsContainer.appendChild(confirmButton);
+
+    dialog.appendChild(optionText);
+    dialog.appendChild(document.createElement('br'));
+    dialog.appendChild(messageText);
+    dialog.appendChild(loader);
+    dialog.appendChild(buttonsContainer);
+    overlay.appendChild(dialog);
+
+    document.body.appendChild(overlay);
+
+    // show loader
+    loader.style.display = 'block';
+    $.ajax({
+        url: '/lifeline/ask_host',
+        method: 'POST',
+        data: {
+        },
+        success: function (response) {
+            // Hide loader
+            document.getElementById('loader-dialog').style.display = 'none';
+
+            // Show message
+            document.getElementById('message-text').textContent = response.hint;
+
+            // show OK button
+            document.getElementById('ok-button').style.display = 'block';
+        }
+    });
+
+    return new Promise((resolve) => {
+        confirmButton.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+            resolve(true);
+        });
+    });
+}
+
 
 // Function to update current question
 function setCurrentQuestion(targetQuestionItem) {

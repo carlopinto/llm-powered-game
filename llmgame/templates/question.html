@@ -169,13 +169,9 @@
                             });
                             break;
                         case 'Ask the Host':
-                            $.ajax({
-                                url: '/lifeline/ask_host',
-                                method: 'POST',
-                                data: {
-                                },
-                                success: function (response) {
-
+                            customAskHost()
+                            .then((confirmed) => {
+                                if (confirmed) {
                                     document.getElementById("hostcross").style.display = 'block';
                                     $(this).off('click');
                                 }
