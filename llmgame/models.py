@@ -23,10 +23,12 @@ class Question(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
     index: Mapped[int] = mapped_column(nullable=False)
+    topic: Mapped[str] = mapped_column(nullable=False)
+    surprise_topic = Column(Boolean, server_default='0')
     question: Mapped[str] = mapped_column(nullable=False)
     answer: Mapped[str] = mapped_column(nullable=False)
-    option_a: Mapped[str]
-    option_b: Mapped[str]
-    option_c: Mapped[str]
-    option_d: Mapped[str]
-    
+    option_a: Mapped[str] = mapped_column(nullable=False)
+    option_b: Mapped[str] = mapped_column(nullable=False)
+    option_c: Mapped[str] = mapped_column(nullable=False)
+    option_d: Mapped[str] = mapped_column(nullable=False)
+    user_answer: Mapped[str] = mapped_column(nullable=True)
