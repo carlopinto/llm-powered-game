@@ -3,6 +3,7 @@ from flask import (
     Blueprint, render_template, request, jsonify, session)
 
 from llmgame.llm_generation import *
+from llmgame.models import *
 
 bp = Blueprint('llmgame', __name__)
 
@@ -44,6 +45,11 @@ def welcome():
         if session['topics'] is None:
             return render_template('error.html', 
                                 errorMessage="AI model is offline! Try again later.")
+        user = User(
+            name=session['name']
+        )
+        db.session.add(user)
+        db.session.commit()
 
         return render_template('topics.html',
                                name=session['name'],
